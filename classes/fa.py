@@ -1,5 +1,5 @@
 
-from Alphabet import Alphabet
+from classes.alphabet import Alphabet
 
 class FA(object):
 

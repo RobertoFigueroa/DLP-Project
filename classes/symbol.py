@@ -4,5 +4,5 @@ class Symbol(object):
         self.symbol = symbol
     
     def __str__(self) -> str:
-        return self.symbol
+        return str(self.symbol)
     
