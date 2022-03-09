@@ -2,7 +2,7 @@
 from classes.alphabet import Alphabet
 from classes.state import State
 
-class FA(object):
+class FA:
 
     def __init__(self,
                  states : list,
@@ -14,7 +14,7 @@ class FA(object):
         self.states = states  # List of states
         self.alphabet = alphabet  # List of symbols objects
         self.init_state = init_state, # Object state
-        self.trans_func = trans_func, # Dict-like function
+        self.trans_func = dict(trans_func), # Dict-like function
         self.final_states = final_states # List of states
 
     def move():

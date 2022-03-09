@@ -118,7 +118,7 @@ class Expression(object):
             elif self.string[i] in str(self.alphabet):
                 symbols.push(Node(self.string[i]))
                 if i+1 < word_size:
-                    if self.string[i+1] in str(self.alphabet):
+                    if self.string[i+1] in str(self.alphabet) or self.string[i+1] == '(':
                         operands.push(Node('؞'))
             
             elif self.string[i] == '(':

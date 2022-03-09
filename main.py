@@ -10,7 +10,12 @@ def main(reg_exp : str, word : str) -> int:
     
     print(f"El alfabeto detectado es {exp.alphabet}")
 
-    print(exp.anlyze_build_tree())
+    root = exp.anlyze_build_tree()
+
+    root.postorder()
+
+    print(root.nfa)
+    
 
 if __name__ == '__main__':
 
