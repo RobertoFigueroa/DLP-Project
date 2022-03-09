@@ -129,8 +129,8 @@ class Expression(object):
                     val2 = symbols.pop()
                     val1 = symbols.pop()
                     op = operands.pop()
-                    op.add_child(val1)
-                    op.add_child(val2)
+                    op.left = val1
+                    op.right = val2
                     symbols.push(op)
                     # symbols.push(val1.value+val2.value+op.value)
                 if not operands.is_empty():
@@ -142,7 +142,7 @@ class Expression(object):
             elif (self.string[i] == '*' or self.string[i] == '+' or self.string[i] == '?'):
                 val1 = symbols.pop()
                 op = Node(self.string[i])
-                op.add_child(val1)
+                op.left = val1
                 symbols.push(op)
                 if i+1 < word_size:
                     if self.string[i+1] in str(self.alphabet) or self.string[i+1] == '(':
@@ -152,8 +152,8 @@ class Expression(object):
                     val2 = symbols.pop()
                     val1 = symbols.pop()
                     op = operands.pop()
-                    op.add_child(val1)
-                    op.add_child(val2)
+                    op.left = val1
+                    op.right = val2
                     symbols.push(op)
                 operands.push(Node(self.string[i]))
             i+= 1
@@ -163,12 +163,12 @@ class Expression(object):
             if (op.value != '*' and op.value != '+' and op.value != '?'):
                 val2 = symbols.pop()
                 val1 = symbols.pop()
-                op.add_child(val1)
-                op.add_child(val2)
+                op.left = val1
+                op.right = val2
                 symbols.push(op)
             else:
                 val1 = symbols.pop()
-                op.add_child(val1)
+                op.left = val1
                 symbols.push(op)
         print(operands.get_stack())
         return symbols.top()

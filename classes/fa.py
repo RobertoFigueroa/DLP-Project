@@ -1,15 +1,15 @@
 
 from classes.alphabet import Alphabet
-
+from classes.state import State
 
 class FA(object):
 
     def __init__(self,
-                 states,
-                 alphabet,
-                 init_state,
-                 trans_func,
-                 final_states) -> None:
+                 states : list,
+                 alphabet : list,
+                 init_state: State,
+                 trans_func: dict,
+                 final_states: list) -> None:
 
         self.states = states  # List of states
         self.alphabet = alphabet  # List of symbols objects

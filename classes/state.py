@@ -1,7 +1,7 @@
 from .counter import Counter
 
 
-class State:
+class State(object):
 
     def __init__(self, value=None, is_init=False, is_terminal=False) -> None:
         if not value:
@@ -13,7 +13,28 @@ class State:
         self.is_init = is_init
 
     
+    def __cmp__(self, other):
+        if type(other) == str:
+            return self.value == other
+        else:
+            return self.value == other.value
+
+    def __hash__(self) -> int:
+        return hash(str(self))
+    
+    def __eq__(self, other: object) -> bool:
+
+        if type(other) == str:
+            return self.value == other
+        else:
+            return self.value == other.value
+    
+    def __ne__(self, other: object) -> bool:
+        return not self.__eq__(other)
+        
+
     def __str__(self) -> str:
         return str(self.value)
         
-    
+    def __repr__(self) -> str:
+        return str(self.value)

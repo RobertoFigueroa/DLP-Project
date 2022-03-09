@@ -1,6 +1,3 @@
-from colorsys import ONE_THIRD
-
-
 class Symbol(object):
     
     def __init__(self, symbol : str) -> None:
@@ -21,6 +18,8 @@ class Symbol(object):
     def __ne__(self, other: object) -> bool:
         return not self.__eq__(other)
 
+    def __hash__(self) -> int:
+        return hash(str(self))
 
     def __repr__(self) -> str:
         return self.symbol
