@@ -12,7 +12,6 @@ def main(reg_exp : str, word : str) -> int:
 
     print(exp.anlyze_build_tree())
 
-
 if __name__ == '__main__':
 
     reg_exp = input("Ingrese una expresión regular >> ")
