@@ -95,7 +95,6 @@ class Expression(object):
             else:
                 val1 = symbols.pop()
                 symbols.push(val1+op)
-        print(operands.get_stack())
         return symbols.top()
 
     
@@ -170,5 +169,4 @@ class Expression(object):
                 val1 = symbols.pop()
                 op.left = val1
                 symbols.push(op)
-        print(operands.get_stack())
         return symbols.top()

@@ -14,7 +14,17 @@ def main(reg_exp : str, word : str) -> int:
 
     root.postorder()
 
-    print(root.nfa)
+    nfa = root.nfa
+
+    print(nfa)
+
+    nfa.get_image()
+    
+    dfa = nfa.build_DFA()
+
+    print(dfa)
+
+
     
 
 if __name__ == '__main__':

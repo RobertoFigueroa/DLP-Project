@@ -11,6 +11,7 @@ class State(object):
             self.value = value
         self.is_terminal = is_terminal
         self.is_init = is_init
+        self.mark = False
 
     
     def __cmp__(self, other):
