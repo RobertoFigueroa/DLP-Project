@@ -4,6 +4,7 @@ from classes.state import State
 from classes.symbol import Symbol
 import networkx as nx
 import matplotlib.pyplot as plt
+import graphviz
 
 class FA:
 
@@ -36,13 +37,19 @@ class FA:
         pass
 
     def get_image(self):
-        automata = nx.Graph()  
+        graph = graphviz.Digraph("fa")  
         edges = []
+        for state in self.states:
+            graph.node(str(state), str(state))
+
         for from_state in self.trans_func.keys():
             for symbol in self.trans_func[from_state].keys():
                 for to_state in self.trans_func[from_state][symbol]:
-                    edges.append([from_state, to_state])
+
+                    graph.edge(str(from_state), str(to_state), label=str(symbol))
         
-        automata.add_edges_from(edges)
-        plt.axis('off')
-        plt.savefig('fa.png')
+        #print("This states", self.states)
+        # graph.edges(edges)
+
+        graph.render(directory="fa", view=True)
+

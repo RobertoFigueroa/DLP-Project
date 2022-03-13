@@ -7,6 +7,8 @@ def main(reg_exp : str, word : str) -> int:
     if not exp.balanced():
         print("La expresion no esta balanceada, revisar parentesis")
         return 0
+
+    # TODO: Check for empty expresion
     
     print(f"El alfabeto detectado es {exp.alphabet}")
 
@@ -16,13 +18,17 @@ def main(reg_exp : str, word : str) -> int:
 
     nfa = root.nfa
 
-    print(nfa)
+    # print("This is nfa")
+    # print(nfa)
 
-    nfa.get_image()
-    
+    # nfa.get_image()
+
     dfa = nfa.build_DFA()
 
-    print(dfa)
+    dfa.get_image()
+
+    # print("This is DFA")
+    # print(dfa)
 
 
     

@@ -160,8 +160,37 @@ class Node:
             data.append(node.generate_NFA())
 
         _postorder(self)
-        return data 
+        return data
+
+    def nullable(self, node) -> bool:
+        if node.value == self.epsilon:
+            return True
+        elif node.value == '|':
+            return self.nullable(node.right) or self.nullable(node.left)
+        elif node.value == '؞':
+            return self.nullable(node.right) and self.nullable(node.right)
+        elif node.value == '*':
+            return True
+        elif node.value == '?':
+            return True # Existe la posiblidad de generar la cadena vacia
+        return False
     
+
+    def firstpos(self, node) -> set:
+        if node.value == self.epsilon:
+            return set()
+        elif node.value == '|':
+            return self.firstpos(node.right).union(node.left)
+        elif node.value == '؞':
+            if self.nullable(node.right):
+                return self.firstpos(node.right).union(node.left)
+            else:
+                return self.firstpos(node.right)
+        elif node.value == '*':
+            return self.firstpos(node.right)
+        elif node.value == '?':
+            return self.firstpos(node.right)
+        return set([self.value])
                     
     def __repr__(self) -> str:
         return f"{str(self.value)}"

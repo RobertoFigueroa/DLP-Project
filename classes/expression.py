@@ -7,6 +7,8 @@ class Expression(object):
 
     def __init__(self, string : str) -> None:
         self.string = string
+        self.delimiter = '#'
+        self.a_string = string + self.delimiter
         self.alphabet = Alphabet()
         self.generate_alphabet()
         
@@ -19,8 +21,21 @@ class Expression(object):
                 self.alphabet.add_symbol(sym)
 
     def balanced(self) -> bool:
-        #TODO ...
-        return True 
+        pile = Stack()
+        for i in self.string:
+            if i == '(':
+                pile.push('(')
+            elif i == ')' and not pile.is_empty():
+                pile.pop()
+            elif i == ')' and pile.is_empty():
+                return False
+            else:
+                continue
+        
+        if pile.is_empty():
+            return True
+        
+        return False 
 
     def precedence(self, op):
         if op == '|':
@@ -30,8 +45,9 @@ class Expression(object):
         if (op == '*' or op == '+' or op == '?'):
             return 3
         return 0
-    
+        
 
+    
 
     def analyze(self):
 
@@ -97,16 +113,16 @@ class Expression(object):
                 symbols.push(val1+op)
         return symbols.top()
 
-    
-    def anlyze_build_tree(self):
 
+    def anlyze_build_tree(self, is_directed=False):
+        if is_directed:
+            self.string = self.string + "#"
         self.alphabet.add_symbol(Symbol('ε'))
         symbols = Stack()
         operands = Stack()
         word_size = len(self.string)
         i=0
         while i < word_size:
-
             if self.string[i] == " ":
                 if i+1 < word_size:
                     if self.string[i+1] in str(self.alphabet) and not symbols.is_empty():
@@ -169,4 +185,5 @@ class Expression(object):
                 val1 = symbols.pop()
                 op.left = val1
                 symbols.push(op)
+        self.alphabet.symbols.pop()
         return symbols.top()

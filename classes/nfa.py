@@ -70,7 +70,7 @@ class NFA(FA):
         # DTran es la funcion de transicion del dfa
         trans_func = dict()
         dStates = []
-        dStates.append((State(), self.e_closure(set([self.init_state])),))
+        dStates.append((State(), self.e_closure(set([self.init_state]))))
         unmarked_state = self.check_marked(dStates)
         while unmarked_state:
             unmarked_state[0].mark = True
@@ -78,6 +78,9 @@ class NFA(FA):
                 if symbol != self.epsilon:
                     U = self.e_closure(self.move(unmarked_state[1], symbol))
                 else:
+                    continue
+                print(f"with {symbol} --> {U}")
+                if len(U) == 0:
                     continue
                 
                 if self.in_dstates(U, dStates) == False:
@@ -88,7 +91,7 @@ class NFA(FA):
                 if unmarked_state[0] in trans_func.keys():
                     if symbol in trans_func[unmarked_state[0]].keys():
                         if state not in trans_func[unmarked_state[0]][symbol]:
-                            trans_func[state][symbol].append(state)
+                            trans_func[unmarked_state[0]][symbol].append(state)
                     else:
                         trans_func[unmarked_state[0]][symbol] = [state]
 
@@ -107,6 +110,8 @@ class NFA(FA):
                     final_states.append(tup[0])
 
         dfa = DFA(states, [sym for sym in self.alphabet if sym != self.epsilon], dStates[0][0], trans_func, final_states)
+
+        print("DStates: ", dStates)
 
         return dfa
     
@@ -143,7 +148,8 @@ class NFA(FA):
             if state in self.trans_func.keys():
                 for symbol in self.trans_func[state].keys():
                     if symbol == a:
-                        trans = self.trans_func[state][symbol]
+                        for to_state in self.trans_func[state][symbol]:
+                            trans.append(to_state)
 
         return set(trans)
 
