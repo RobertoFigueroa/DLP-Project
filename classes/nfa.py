@@ -46,7 +46,7 @@ class NFA(FA):
                 symbol : [to_state]
             }
 
-    def check_marked(self, dstates : list) -> bool:
+    def check_marked(self, dstates : list) -> State:
         for state in dstates:
             if state[0].mark == False:
                 return state

@@ -16,6 +16,11 @@ class Alphabet(object):
         
         return False
 
+    def get_alphabet(self) -> list:
+        return self.symbols
+
+    def __repr__(self) -> str:
+        return self.__str__()
 
     def __str__(self) -> str:
         syms = []

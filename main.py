@@ -12,26 +12,27 @@ def main(reg_exp : str, word : str) -> int:
     
     print(f"El alfabeto detectado es {exp.alphabet}")
 
+    # -- Build FNA by Thompson and subsets ---
+
     root = exp.anlyze_build_tree()
-
-    root.postorder()
-
+    root.build_NFA() #
     nfa = root.nfa
-
     # print("This is nfa")
     # print(nfa)
-
     # nfa.get_image()
-
-    dfa = nfa.build_DFA()
-
-    dfa.get_image()
-
+    # dfa = nfa.build_DFA()
+    # dfa.get_image()
     # print("This is DFA")
     # print(dfa)
 
-
-    
+    # --- Build direct DFA ---
+    exp = Expression(reg_exp, is_extended=True)
+    root = exp.anlyze_build_tree()
+    leafs, nodes = root.build_firstlast_pos()
+    followpos = root.followpos(leafs, nodes)
+    print(followpos)
+    directed_dfa = root.build_direct_DFA(exp.alphabet.get_alphabet(), followpos, leafs)
+    print(directed_dfa)
 
 if __name__ == '__main__':
 

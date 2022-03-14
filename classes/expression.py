@@ -5,10 +5,11 @@ from structures.node import Node
 
 class Expression(object):
 
-    def __init__(self, string : str) -> None:
-        self.string = string
-        self.delimiter = '#'
-        self.a_string = string + self.delimiter
+    def __init__(self, string : str, is_extended=False) -> None:
+        if is_extended:
+            self.string ='(' + string + ')' + '#' 
+        else:
+            self.string = string
         self.alphabet = Alphabet()
         self.generate_alphabet()
         
@@ -114,9 +115,8 @@ class Expression(object):
         return symbols.top()
 
 
-    def anlyze_build_tree(self, is_directed=False):
-        if is_directed:
-            self.string = self.string + "#"
+    def anlyze_build_tree(self):
+
         self.alphabet.add_symbol(Symbol('ε'))
         symbols = Stack()
         operands = Stack()

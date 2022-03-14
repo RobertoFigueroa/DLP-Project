@@ -1,4 +1,8 @@
+from operator import index
 from matplotlib import transforms
+from classes.alphabet import Alphabet
+from classes.fa import FA
+from classes.dfa import DFA
 from classes.nfa import NFA
 from classes.state import State
 import numpy as np
@@ -14,6 +18,12 @@ class Node:
         self.epsilon = Symbol('ε')
         self.operands = ['*', '+', '|', '?', '؞']
         self.nfa = None
+        self.is_leaf = False
+        self.leaf_value = None
+        self.null = None
+        self.firstpos_ = None
+        self.lastpos_ = None
+        self.followpos_ = dict()
 
     def add_child(self, child : any) -> None:
         self.children.append(child)
@@ -147,9 +157,8 @@ class Node:
 
 
         return nfa
-
-
-    def postorder(self):
+            
+    def build_NFA(self):
         
         data = []
         def _postorder(node):
@@ -162,35 +171,157 @@ class Node:
         _postorder(self)
         return data
 
-    def nullable(self, node) -> bool:
-        if node.value == self.epsilon:
-            return True
-        elif node.value == '|':
-            return self.nullable(node.right) or self.nullable(node.left)
-        elif node.value == '؞':
-            return self.nullable(node.right) and self.nullable(node.right)
-        elif node.value == '*':
-            return True
-        elif node.value == '?':
-            return True # Existe la posiblidad de generar la cadena vacia
-        return False
+    def nullable(self) -> bool:
+        if self.value == self.epsilon:
+            self.null = True
+        elif self.value == '|':
+            self.null = self.left.null or self.right.null
+        elif self.value == '؞':
+            self.null = self.left.null and self.right.null
+        elif self.value == '*':
+            self.null = True
+        elif self.value == '?':
+            self.null = True # Existe la posiblidad de generar la cadena vacia
+        elif self.value == '+':
+            self.null = False # No existe posiblidad de generar la cadena vacia
+        else:
+            self.null = False
     
+    def build_firstlast_pos(self) -> tuple:
+        leafs = []
+        nodes = []
+        def _postorder(node):
+            if node is None:
+                return
+            if not node.left and not node.right:
+                node.leaf_value = len(leafs)
+                leafs.append(node)
+            _postorder(node.left)
+            _postorder(node.right)
+            node.nullable()
+            node.firstpos()
+            node.lastpos()
+            nodes.append(node)
+        _postorder(self)
 
-    def firstpos(self, node) -> set:
-        if node.value == self.epsilon:
-            return set()
-        elif node.value == '|':
-            return self.firstpos(node.right).union(node.left)
-        elif node.value == '؞':
-            if self.nullable(node.right):
-                return self.firstpos(node.right).union(node.left)
+        return leafs, nodes
+
+
+    def firstpos(self) -> set:
+        if self.value == self.epsilon:
+            self.firstpos_ = set([])
+        elif self.value == '|':
+            self.firstpos_ = self.left.firstpos_.union(self.right.firstpos_)
+        elif self.value == '؞':
+            if self.left.null:
+                self.firstpos_ = self.left.firstpos_.union(self.right.firstpos_)
             else:
-                return self.firstpos(node.right)
-        elif node.value == '*':
-            return self.firstpos(node.right)
-        elif node.value == '?':
-            return self.firstpos(node.right)
-        return set([self.value])
+                self.firstpos_ = self.left.firstpos_
+        elif self.value == '*':
+            self.firstpos_ = self.left.firstpos_
+        elif self.value == '?':
+            self.firstpos_ = self.left.firstpos_
+        elif self.value == '+':
+            self.firstpos_ = self.left.firstpos_
+        else:
+            self.firstpos_ = set([self.leaf_value])
+
+    def lastpos(self):
+        if self.value == self.epsilon:
+            self.lastpos_ = set([])
+        elif self.value == '|':
+            self.lastpos_ =  self.left.lastpos_.union(self.right.lastpos_)
+        elif self.value == '؞':
+            if self.right.null:
+                self.lastpos_ = self.left.lastpos_.union(self.right.lastpos_)
+            else:
+                self.lastpos_ = self.right.lastpos_
+        elif self.value == '*':
+            self.lastpos_ = self.left.lastpos_
+        elif self.value == '?':
+            self.lastpos_ = self.left.lastpos_
+        elif self.value == '+':
+            self.lastpos_ = self.left.lastpos_
+        else:
+            self.lastpos_ = set([self.leaf_value])
+
+    def followpos(self, leafs : list, nodes : list) -> set:
+        followpos_struct = {}
+        for index, _ in enumerate(leafs):
+            followpos_struct[index] = set([])
+        for node in nodes:
+            if node.value == '؞':
+                for i in node.left.lastpos_:
+                    followpos_struct[i] = followpos_struct[i].union(node.right.firstpos_)
+
+            elif node.value == '*':
+                for i in node.lastpos_:
+                    followpos_struct[i] = followpos_struct[i].union(node.firstpos_)
+
+        return followpos_struct
+    
+    def check_marked(self, dStates : list) -> State:
+        for state in dStates:
+            if state[0].mark == False:
+                return state
+        return None
+
+    def in_dstates(self, U: set, dstates : list) -> bool:
+        for state in dstates:
+            if state[1] == U:
+                return True
+        
+        return False
+
+    def get_U_state(self, U, dstates):
+        for state in dstates:
+            if state[1] == U:
+                return state[0] 
+        return None
+
+
+    def build_direct_DFA(self, alphabet : Alphabet, followpos : dict, leaf_nodes : list) -> None:
+        dStates = []
+        trans_func = dict()
+        dStates.append((State(), self.firstpos_))
+        unmarked_state = self.check_marked(dStates)
+        while unmarked_state:
+            unmarked_state[0].mark = True
+            for symbol in alphabet:
+                U = set()
+                if symbol != self.epsilon:
+                    indexes = [i for i,val in enumerate(leaf_nodes) if (val.value == str(symbol) and i in unmarked_state[1])]
+                    print("indexes: ", indexes, "symbol ", symbol)
+                    for followpos_state in followpos.keys():
+                        for s_index in indexes:
+                            if followpos_state == s_index:
+                                U = followpos[followpos_state].union(U)
+                else:
+                    continue
+                if len(U) == 0:
+                    continue
+                if not self.in_dstates(U, dStates):
+                    dStates.append((State(), U))
+
+                state = self.get_U_state(U, dStates)
+
+                print(dStates)
+                if unmarked_state[0] in trans_func.keys():
+                    if symbol in trans_func[unmarked_state[0]].keys():
+                        if state not in trans_func[unmarked_state[0]][symbol]:
+                            trans_func[unmarked_state[0]][symbol].append(state)
+                    else:
+                        trans_func[unmarked_state[0]][symbol] = [state]
+
+                else:
+                    trans_func[unmarked_state[0]] = {symbol : [state]}
+
+            unmarked_state = self.check_marked(dStates)
+        
+        return trans_func
+
+
                     
+
     def __repr__(self) -> str:
         return f"{str(self.value)}"
