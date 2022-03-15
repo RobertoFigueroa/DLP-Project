@@ -1,0 +1,18 @@
+digraph fa {
+	30 [label=30]
+	31 [label=31]
+	32 [label=32]
+	33 [label=33]
+	30
+	31
+	32
+	33 [shape=doublecircle]
+	30 -> 30 [label=b]
+	30 -> 31 [label=a]
+	31 -> 32 [label=b]
+	32 -> 33 [label=b]
+	33 -> 33 [label=b]
+	33 -> 33 [label=a]
+	"" [shape=plaintext]
+	"" -> 30
+}

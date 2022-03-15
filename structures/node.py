@@ -1,4 +1,3 @@
-from operator import index
 from matplotlib import transforms
 from classes.alphabet import Alphabet
 from classes.fa import FA
@@ -291,7 +290,7 @@ class Node:
                 U = set()
                 if symbol != self.epsilon:
                     indexes = [i for i,val in enumerate(leaf_nodes) if (val.value == str(symbol) and i in unmarked_state[1])]
-                    print("indexes: ", indexes, "symbol ", symbol)
+                    # print("indexes: ", indexes, "symbol ", symbol)
                     for followpos_state in followpos.keys():
                         for s_index in indexes:
                             if followpos_state == s_index:
@@ -305,7 +304,7 @@ class Node:
 
                 state = self.get_U_state(U, dStates)
 
-                print(dStates)
+                # print(dStates)
                 if unmarked_state[0] in trans_func.keys():
                     if symbol in trans_func[unmarked_state[0]].keys():
                         if state not in trans_func[unmarked_state[0]][symbol]:
@@ -317,8 +316,25 @@ class Node:
                     trans_func[unmarked_state[0]] = {symbol : [state]}
 
             unmarked_state = self.check_marked(dStates)
-        
-        return trans_func
+
+        end_index = [i for i,val in enumerate(leaf_nodes) if val.value == "#" ]
+
+        # print(dStates)
+
+        final_states = []
+        states = []
+
+        for state in dStates:
+            for index in state[1]:
+                if index == end_index[0]:
+                    final_states.append(state[0])
+            states.append(state[0])
+
+        new_alphabet = [i for i in alphabet if i != self.epsilon and i != "#"]
+
+        init_state = dStates[0][0]
+
+        return DFA(states, new_alphabet, init_state, trans_func, final_states)
 
 
                     

@@ -1,0 +1,6 @@
+digraph fa {
+	4 [label=4]
+	4 [shape=doublecircle]
+	"" [shape=plaintext]
+	"" -> 4
+}

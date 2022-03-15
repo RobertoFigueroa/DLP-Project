@@ -3,6 +3,7 @@ from classes.state import State
 from classes.symbol import Symbol
 from structures.stack import Stack
 from classes.dfa import DFA
+from time import time
 
 class NFA(FA):
 
@@ -79,7 +80,7 @@ class NFA(FA):
                     U = self.e_closure(self.move(unmarked_state[1], symbol))
                 else:
                     continue
-                print(f"with {symbol} --> {U}")
+                # print(f"with {symbol} --> {U}")
                 if len(U) == 0:
                     continue
                 
@@ -111,7 +112,7 @@ class NFA(FA):
 
         dfa = DFA(states, [sym for sym in self.alphabet if sym != self.epsilon], dStates[0][0], trans_func, final_states)
 
-        print("DStates: ", dStates)
+        # print("DStates: ", dStates)
 
         return dfa
     
@@ -153,6 +154,19 @@ class NFA(FA):
 
         return set(trans)
 
+    def simulate(self, word : str) -> tuple:
+        start = time()
+        S = self.e_closure(set([self.init_state]))
+        for letter in word:
+            S = self.e_closure(self.move(S, letter))
+        end = time()
+        if len(S.intersection(set(self.final_states))) > 0:
+            return (True, end-start)
+        return (False, end-start)
+
 
     def __str__(self) -> str:
-        return f"{str(self.states)}, {self.init_state}, {str(self.trans_func)}, {str(self.final_states)}, {str(self.alphabet)}"
+        return f"States: {str(self.states)}\nInit state: {self.init_state}\n Tran func: {str(self.trans_func)}\n Final states: {str(self.final_states)}\n Alphabet: {str(self.alphabet)}\n"
+
+    def __repr__(self) -> str:
+        return f"nfa-{time()}"

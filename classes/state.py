@@ -24,7 +24,8 @@ class State(object):
         return hash(str(self))
     
     def __eq__(self, other: object) -> bool:
-
+        if other == None:
+            return False
         if type(other) == str:
             return self.value == other
         else:

@@ -33,6 +33,9 @@ class FA:
     def add_transition():
         pass
 
+    def simulate():
+        pass
+
     def remove_transition():
         pass
 
@@ -42,14 +45,19 @@ class FA:
         for state in self.states:
             graph.node(str(state), str(state))
 
+        for state in self.states:
+            if state in self.final_states:
+                graph.node(str(state), _attributes = {'shape': 'doublecircle'})
+            else:
+                graph.node(str(state))
+
         for from_state in self.trans_func.keys():
             for symbol in self.trans_func[from_state].keys():
                 for to_state in self.trans_func[from_state][symbol]:
-
                     graph.edge(str(from_state), str(to_state), label=str(symbol))
-        
-        #print("This states", self.states)
-        # graph.edges(edges)
 
-        graph.render(directory="fa", view=True)
+        graph.node('', _attributes={'shape' : 'plaintext'})
+        graph.edge('', str(self.init_state))
+        
+        graph.render(directory=f"output/{repr(self)}", view=True)
 

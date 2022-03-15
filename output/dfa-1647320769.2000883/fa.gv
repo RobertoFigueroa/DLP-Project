@@ -1,0 +1,7 @@
+digraph fa {
+	7 [label=7]
+	7 [shape=doublecircle]
+	7 -> 7 [label=a]
+	"" [shape=plaintext]
+	"" -> 7
+}

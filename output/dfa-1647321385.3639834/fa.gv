@@ -1,0 +1,19 @@
+digraph fa {
+	13 [label=13]
+	14 [label=14]
+	15 [label=15]
+	16 [label=16]
+	13
+	14
+	15
+	16 [shape=doublecircle]
+	13 -> 14 [label=a]
+	13 -> 15 [label=b]
+	13 -> 16 [label=c]
+	14 -> 14 [label=a]
+	14 -> 16 [label=c]
+	15 -> 15 [label=b]
+	15 -> 16 [label=c]
+	"" [shape=plaintext]
+	"" -> 13
+}
