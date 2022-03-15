@@ -1,6 +1,0 @@
-digraph fa {
-	3 [label=3]
-	3 [shape=doublecircle]
-	"" [shape=plaintext]
-	"" -> 3
-}
