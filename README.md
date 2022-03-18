@@ -30,9 +30,19 @@ Con esto obtenemos:
 
 ***NFA***
 
+![alt text](https://github.com/RobertoFigueroa/DLP-Project/blob/main/nfa.png?raw=true)
+
 ***DFA por NFA***
+
+![alt text](https://github.com/RobertoFigueroa/DLP-Project/blob/main/dfa.png?raw=true)
+
 
 ***DFA directo de la exp reg***
 
+![alt text](https://raw.githubusercontent.com/RobertoFigueroa/DLP-Project/main/dfa-direct.png?raw=true)
+
+
 ***Un poco de profiling***
+
+![alt text](https://github.com/RobertoFigueroa/DLP-Project/blob/main/profiling.png?raw=true)
 
