@@ -32,7 +32,12 @@ def main(reg_exp : str, word : str) -> int:
     print('*'*20)
     print("NFA")
     print('*'*20)
-    root = exp.anlyze_build_tree()
+    root = None
+    try :
+        root = exp.anlyze_build_tree()
+    except:
+        print("Regex no compatible")
+        return 0
     root.build_NFA()
     nfa = root.nfa
     print("This is NFA")
