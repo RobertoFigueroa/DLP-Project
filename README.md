@@ -39,7 +39,7 @@ Con esto obtenemos:
 
 ***DFA directo de la exp reg***
 
-![alt text](https://raw.githubusercontent.com/RobertoFigueroa/DLP-Project/main/dfa-direct.png?raw=true)
+![alt text](https://github.com/RobertoFigueroa/DLP-Project/blob/main/dfa-direct.png?raw=true)
 
 
 ***Un poco de profiling***
