@@ -39,3 +39,4 @@ class DFA(FA):
 
     def __repr__(self) -> str:
         return f"dfa-{time()}"
+

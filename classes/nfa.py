@@ -166,6 +166,8 @@ class NFA(FA):
 
 
     def __str__(self) -> str:
+        # Sanity check
+        self.alphabet = [i for i in self.alphabet if i != self.epsilon]
         return f"States: {str(self.states)}\nInit state: {self.init_state}\n Tran func: {str(self.trans_func)}\n Final states: {str(self.final_states)}\n Alphabet: {str(self.alphabet)}\n"
 
     def __repr__(self) -> str:
