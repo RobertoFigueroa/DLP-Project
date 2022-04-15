@@ -48,8 +48,6 @@ class Expression(object):
         return 0
         
 
-    
-
     def analyze(self):
 
         self.alphabet.add_symbol(Symbol('ε'))
