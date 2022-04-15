@@ -10,7 +10,7 @@ COCOR_SPECIFICATIONS = ['COMPILER', 'CHARACTERS', 'KEYWORDS',
 class Cocol:
     def __init__(self) -> None:
         self.name = None
-        self.characters = []
+        self.characters = {}
         self.keyword = []
         self.tokens = []
         self.ignore = {}
@@ -45,42 +45,58 @@ class Scanner:
 
     def analyze_file(self):
         
-        coco_file = Cocol()
+        self.coco_file = Cocol()
         # Reads whole file
         while self.current_line != None:
 
             if any(word in COCOR_SPECIFICATIONS for word in self.current_line):
 
                 if "COMPILER" in self.current_line:
-                    coco_file.name = self.current_line[self.current_line.index("COMPILER") +1]
+                    self.coco_file.name = self.current_line[self.current_line.index("COMPILER") +1]
                     self.next_line()
                 
                 elif "CHARACTERS" in self.current_line:
                     self.next_line()
+                    self.read_section("CHARACTERS")
 
 
-        return coco_file
+        return self.coco_file
 
     
     def read_section(self, section):
 
         if not any(word in COCOR_SPECIFICATIONS for word in self.current_line):
 
-            
+            curr_line = " ".join(self.current_line)
 
-                    
+            # TODO: Check for other ways to set 
+            curr_line = curr_line[:-1]
+            self.get_key_value(curr_line, section)
+            self.next_line()
+
                 
+    def get_key_value(self, line, attr):
+
+        if attr == "CHARACTERS":
+            self.define_character(line)
+
+    def define_character(self, line):
+
+        key, value = line.split("=", 1)
+        key.strip()
 
 
 
+        self.coco_file.characters[key] = 
 
 
-        # leer compiler
+    def get_set(self, value):
 
-        # Crear DFA para compiler
-        # expect("COMPILER")
-        # expect("blankspaces")
-        # expect("id")
+        _set = []
+
+        # Caso simpl
+
+        return _set
 
 
 
