@@ -1,5 +1,6 @@
 from xml.dom.pulldom import CHARACTERS
 from classes.buffer import Buffer
+from classes.set import DefSet
 
 EOL = '\n'
 EOF = None
@@ -10,7 +11,7 @@ COCOR_SPECIFICATIONS = ['COMPILER', 'CHARACTERS', 'KEYWORDS',
 class Cocol:
     def __init__(self) -> None:
         self.name = None
-        self.characters = {}
+        self.characters = []
         self.keyword = []
         self.tokens = []
         self.ignore = {}
@@ -85,18 +86,9 @@ class Scanner:
         key, value = line.split("=", 1)
         key.strip()
 
+        set_ = DefSet(value, self.coco_file.characters)
 
+        value = list(set_.Set())
 
-        self.coco_file.characters[key] = 
-
-
-    def get_set(self, value):
-
-        _set = []
-
-        # Caso simpl
-
-        return _set
-
-
+        final_set = 
 
