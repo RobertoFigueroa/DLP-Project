@@ -1,0 +1,12 @@
+digraph fa {
+	8 [label=8]
+	9 [label=9]
+	10 [label=10]
+	8
+	9
+	10 [shape=doublecircle]
+	8 -> 9 [label=a]
+	9 -> 10 [label=a]
+	"" [shape=plaintext]
+	"" -> 8
+}

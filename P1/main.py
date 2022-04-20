@@ -42,12 +42,12 @@ def main(reg_exp : str, word : str) -> int:
     nfa = root.nfa
     print("This is NFA")
     print(nfa)
-    nfa.get_image()
+    # nfa.get_image()
     print('*'*20)
     print("DFA with NFA")
     print('*'*20)
     dfa = nfa.build_DFA()
-    dfa.get_image()
+    # dfa.get_image()
     print("This is DFA")
     print(dfa)
 
@@ -57,7 +57,7 @@ def main(reg_exp : str, word : str) -> int:
     leafs, nodes = root.build_firstlast_pos()
     followpos = root.followpos(leafs, nodes)
     directed_dfa = root.build_direct_DFA(exp.alphabet.get_alphabet(), followpos, leafs)
-    directed_dfa.get_image()
+    # directed_dfa.get_image()
     print('*'*20)
     print("DFA (direct)")
     print('*'*20)
@@ -67,7 +67,7 @@ def main(reg_exp : str, word : str) -> int:
     print("Simulating... ")
     nfa_status, nfa_time = nfa.simulate(word)
     dfa_status, dfa_time = dfa.simulate(word)
-    dfad_status, dfad_time = dfa.simulate(word)
+    dfad_status, dfad_time = directed_dfa.simulate(word)
 
     table = PrettyTable()
     table.field_names = ["FA", "Status", "Time"]
