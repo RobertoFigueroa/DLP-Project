@@ -2,6 +2,7 @@
 
 #from classes.scanner import Scanner
 
+from fileinput import filename
 from classes.expression import Expression
 
 import string 
@@ -46,16 +47,16 @@ def main(file_name : str) -> int:
     number = f'(({digit})({digit})*)'
     ident = f'({letter})({letter}|{digit})*'
 
-    Char = f'({char}|(CHR{open_par}{number}{close_par}))'
+    Char = f'(({char})|(CHR{open_par}{number}{close_par}))'
     BasicSet = f'({String})|({ident})|({Char}(..{Char})?)'
-    Set = f'({BasicSet})(({plus}|-){BasicSet})*'
-    SetDecl = f'{ident}={Set}'
+    Set = f'({BasicSet})(({plus}|-)({BasicSet}))*'
+    SetDecl = f'({ident})=({Set})'
 
-    print(Set)
+    print(SetDecl)
     # print(SetDecl)
 
             # --- Build direct DFA ---
-    exp = Expression(Set, is_extended=True)
+    exp = Expression(SetDecl, is_extended=True)
     root = exp.anlyze_build_tree()
     leafs, nodes = root.build_firstlast_pos()
     followpos = root.followpos(leafs, nodes)
@@ -65,14 +66,14 @@ def main(file_name : str) -> int:
     print("DFA (direct)")
     print('*'*20)
     print(directed_dfa)
-
-    word = input("Type word: ")
-    dfad_status, dfad_time = directed_dfa.simulate(word)
-    print(dfad_status)
-    print(dfad_time)
+    while True:
+        word = input("Type word: ")
+        result = directed_dfa.analyze(word)
+        print(result)
 
 if __name__ == '__main__':
 
-    file_name = input("Ingrese el nombre del archivo >> ")
+    #file_name = input("Ingrese el nombre del archivo >> ")
+    file_name = "hola"
     #TODO: VALIDATE INPUT
     main(file_name)

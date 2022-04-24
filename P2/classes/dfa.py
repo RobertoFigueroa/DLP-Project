@@ -20,6 +20,14 @@ class DFA(FA):
             
         return None
 
+    def move2(self, state, symbol):
+        if state:
+            if state in self.trans_func.keys():
+                if symbol in self.trans_func[state].keys():
+                    return self.trans_func[state][symbol]
+            
+        return None
+
     def simulate(self, word : str) -> tuple:
         start = time()
         current_state = self.init_state
@@ -33,7 +41,22 @@ class DFA(FA):
                 return (True, end-start)
         return (False, end-start)
 
-    
+    def analyze(self, word : str) -> tuple:
+        current_state = self.init_state
+        cs = self.init_state
+        word_len = len(word)
+        idx = 0
+        while idx < word_len:
+            next_state = self.move(current_state, word[idx])
+            ns2 = self.move2(current_state, word[idx])
+            print(ns2)
+            current_state = next_state
+            idx += 1
+        if current_state in self.final_states:
+                print("Fina states: ", current_state)
+                return True
+        return False
+
     def __str__(self) -> str:
         return f"States: {str(self.states)}\nInit state: {self.init_state}\n Tran func: {str(self.trans_func)}\n Final states: {str(self.final_states)}\n Alphabet: {str(self.alphabet)}\n"
 

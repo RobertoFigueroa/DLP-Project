@@ -5,9 +5,9 @@ from structures.node import Node
 
 class Expression(object):
 
-    def __init__(self, string : str, is_extended=False) -> None:
+    def __init__(self, string : list, is_extended=False) -> None:
         if is_extended:
-            self.string ='(' + string + ')' + '#' 
+            self.string =['('] + string + [')'] + ['§'] 
         else:
             self.string = string
         self.alphabet = Alphabet()
@@ -17,7 +17,7 @@ class Expression(object):
     def generate_alphabet(self) -> None:
         ops = ['*', '?', '(', ')', '+', '|']
         for char in self.string:
-            if char not in ops and char != ' ':
+            if char not in ops:
                 sym = Symbol(char)
                 self.alphabet.add_symbol(sym)
 
@@ -185,3 +185,6 @@ class Expression(object):
                 symbols.push(op)
         self.alphabet.symbols.pop()
         return symbols.top()
+
+    
+        

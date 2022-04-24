@@ -27,3 +27,4 @@ class Alphabet(object):
         for symbol in self.symbols:
             syms.append(str(symbol))
         return str(syms)
+
