@@ -67,7 +67,7 @@ class NFA(FA):
         return None
 
 
-    def build_DFA(self):
+    def build_DFA(self, final_s = None):
         # DTran es la funcion de transicion del dfa
         trans_func = dict()
         dStates = []
@@ -103,12 +103,19 @@ class NFA(FA):
 
         final_states = []
         states = []
-
+        print("Final state", self.final_states)
         for tup in dStates:
+            print(tup)
             states.append(tup[0])
             for state in tup[1]:
                 if state in self.final_states:
                     final_states.append(tup[0])
+                if final_s != None:
+                    if state in final_s.keys():
+                        self.add_type_lexeme_to_state(
+                            tup[0],
+                            final_s[state]
+                        )
 
         dfa = DFA(states, [sym for sym in self.alphabet if sym != self.epsilon], dStates[0][0], trans_func, final_states)
 
@@ -116,6 +123,8 @@ class NFA(FA):
 
         return dfa
     
+    def add_type_lexeme_to_state(self, state, lex):
+        state.lexeme = lex
 
     def e_closure(self, state : any) -> set:
         # return: conjunto de estados E conjunto P(states)

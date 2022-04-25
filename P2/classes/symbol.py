@@ -11,6 +11,8 @@ class Symbol(object):
 
         if type(other) == str:
             return self.symbol == other
+        if type(other) == int:
+            return self.symbol == str(other)
         else:
             return self.symbol == other.symbol
         

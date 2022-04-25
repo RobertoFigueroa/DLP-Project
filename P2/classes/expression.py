@@ -123,15 +123,15 @@ class Expression(object):
         while i < word_size:
             if self.string[i] == " ":
                 if i+1 < word_size:
-                    if self.string[i+1] in str(self.alphabet) and not symbols.is_empty():
+                    if str(self.string[i+1]) in str(self.alphabet) and not symbols.is_empty():
                         operands.push(Node('؞'))
                 i += 1
                 continue
 
-            elif self.string[i] in str(self.alphabet):
+            elif str(self.string[i]) in str(self.alphabet):
                 symbols.push(Node(self.string[i]))
                 if i+1 < word_size:
-                    if self.string[i+1] in str(self.alphabet) or self.string[i+1] == '(':
+                    if str(self.string[i+1]) in str(self.alphabet) or self.string[i+1] == '(':
                         operands.push(Node('؞'))
             
             elif self.string[i] == '(':
@@ -149,7 +149,7 @@ class Expression(object):
                 if not operands.is_empty():
                     operands.pop()
                 if i+1 < word_size:
-                    if self.string[i+1] in str(self.alphabet) or self.string[i+1] == '(':
+                    if str(self.string[i+1]) in str(self.alphabet) or self.string[i+1] == '(':
                         operands.push(Node('؞'))
 
             elif (self.string[i] == '*' or self.string[i] == '+' or self.string[i] == '?'):
@@ -158,7 +158,7 @@ class Expression(object):
                 op.left = val1
                 symbols.push(op)
                 if i+1 < word_size:
-                    if self.string[i+1] in str(self.alphabet) or self.string[i+1] == '(':
+                    if str(self.string[i+1]) in str(self.alphabet) or self.string[i+1] == '(':
                         operands.push(Node('؞'))
             else:
                 while not operands.is_empty() and (self.precedence(operands.top().value) > self.precedence(self.string[i])):

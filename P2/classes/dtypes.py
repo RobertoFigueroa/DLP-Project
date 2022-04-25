@@ -50,6 +50,7 @@ class VarType(Enum):
     LBRACKET = 12
     RBRACKET = 13
     OR = 14
+    CHARDF = 15
 
 
 @dataclass

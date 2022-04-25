@@ -1,7 +1,9 @@
 from asyncio import current_task
+from urllib.parse import non_hierarchical
 from classes.fa import FA
 from classes.state import State
 from time import time
+from classes.dtypes import Token
 
 class DFA(FA):
 
@@ -40,6 +42,34 @@ class DFA(FA):
         if current_state in self.final_states:
                 return (True, end-start)
         return (False, end-start)
+
+    def get_token(self, word : list) -> tuple:
+        current_state = self.init_state
+        cs = self.init_state
+        word_len = len(word)
+        idx = 0
+        buff = ''
+        last_token = None
+        while idx < word_len:
+            next_state = self.move(current_state, word[idx])
+            current_state = next_state
+            buff += chr(int(word[idx])) 
+            idx += 1
+
+            if current_state.lexeme != None:
+                last_token = (Token(current_state.lexeme, buff), idx)
+            
+            if current_state == None:
+                if last_token:
+                    return last_token
+                else:
+                    raise Exception("Lex error in characters definition (no transition found)")
+        if last_token:
+            return last_token
+        else:
+            raise Exception("Lex error in characters definition (found end of string)")
+    
+
 
     def analyze(self, word : str) -> tuple:
         current_state = self.init_state

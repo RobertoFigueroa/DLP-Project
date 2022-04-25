@@ -1,8 +1,14 @@
 
-from dtypes import VarType
+from numpy import fromregex
+from classes.alphabet import Alphabet
+from classes.dtypes import VarType
 import string
-from expression import Expression
-from nfa import NFA
+from classes.expression import Expression
+from classes.nfa import NFA
+from classes.state import State
+from classes.symbol import Symbol
+
+EPSILON = Symbol('ε')
 
 class CocolProcessor:
 
@@ -10,6 +16,7 @@ class CocolProcessor:
         self.nfa = None
         self.dfas = []
         self.final_states = {}
+        self.dfa = None
 
 
     def build_dfa(self, exp, name):
@@ -22,43 +29,85 @@ class CocolProcessor:
         )
         self.final_states[ddfa.final_states[0]] = name
 
+        if self.nfa == None:
+            init_state = State(is_init=True)
+            final_state = State(is_terminal=True)
+            states = ddfa.states + [init_state, final_state]
+            trans_func = ddfa.trans_func
+            self.nfa = NFA(states,
+                        ddfa.alphabet,
+                        init_state,
+                        trans_func, [final_state])
+            self.nfa.add_transition(init_state, 
+                                    ddfa.init_state,
+                                    EPSILON)
+            
+            self.nfa.add_transition(ddfa.final_states[0],
+                                    final_state,
+                                    EPSILON)
+
+        else:
+            for from_s in ddfa.trans_func.keys():
+                for symbol in ddfa.trans_func[from_s]:
+                    to_states = ddfa.trans_func[from_s][symbol]
+                    for to_state in to_states:
+                        self.nfa.add_transition(
+                            from_s,
+                            to_state,
+                            symbol
+                        )
+                    
+            init_state = self.nfa.init_state
+            final_state = self.nfa.final_states[0]
+            self.nfa.add_transition(init_state, ddfa.init_state, EPSILON)
+            self.nfa.add_transition(ddfa.final_states[0], final_state, EPSILON)
+
     def generate_dfas(self):
         open_quote_mark = "«"
         open_par = "܆"
         close_par = "܇"
         plus = "܀"
         
-        letter = Expression([str(ord(ch)) for ch in string.ascii_letters])
-        digit = Expression([str(ord(d)) for d in string.digits])
-        any_but_quote = Expression([str(ord(s)) for s in string.printable.replace('"', "")])
-        any_but_apostrophe = Expression([str(ord(s)) for s in string.printable.replace("'", "")])
+        letter = " | ".join([str(ord(ch)) for ch in string.ascii_letters])
+        letter = letter.split(" ")
         
-        ident = ['('] + letter.string + [')'] + ['('] + letter.string + ['|'] + digit.string + [')'] + ['*']
-        ident = Expression(ident)
+        digit = " | ".join([str(ord(d)) for d in string.digits])
+        digit = digit.split(" ")
+        
+        any_but_quote = " | ".join([str(ord(s)) for s in string.printable.replace('"', "")])
+        any_but_quote = any_but_quote.split(" ")
 
-        number = ['('] + ['('] + digit.string + [')'] + ['(']+ digit.string + [')'] + ['*'] + [')']
-        number = Expression(number)
+        any_but_apostrophe = " | ".join([str(ord(s)) for s in string.printable.replace("'", "")])
+        any_but_apostrophe = any_but_apostrophe.split(" ")
 
-        String = [ord('"')] + ['('] + any_but_quote.string + [')'] + ['*'] + [ord('"')]
-        String = Expression(String)
+        ident = ['('] + letter + [')'] + ['('] + letter + ['|'] + digit + [')'] + ['*']
+        ident = Expression(ident, is_extended=True)
 
-        char = [ord("\\")] + [ord("'")] + ['('] + any_but_apostrophe.string + [')'] + [ord("\\")] + [ord("'")]
-        char = Expression(char)
+        number = ['('] + ['('] + digit + [')'] + ['(']+ digit + [')'] + ['*'] + [')']
+        number = Expression(number, is_extended=True)
 
+        String = [str(ord('"'))] + ['('] + any_but_quote + [')'] + ['*'] + [str(ord('"'))]
+        String = Expression(String, is_extended=True)
 
-        lbrack = Expression([ord('{')])
+        char = [str(ord("\\"))] + [str(ord("'"))] + ['('] + any_but_apostrophe + [')'] + [str(ord("\\"))] + [str(ord("'"))]
+        char = Expression(char, is_extended=True)
 
-        rbrack = Expression([ord('}')])
+        chardf = [str(ord("C")), str(ord("H")), str(ord("R")), str(ord("("))] 
+        chardf = Expression(chardf, is_extended=True)
 
-        union = Expression([ord('+')])
+        lbrack = Expression([str(ord('{'))], is_extended=True)
 
-        diff = Expression([ord('-')])
+        rbrack = Expression([str(ord('}'))], is_extended=True)
 
-        _range = Expression([ord('.'), ord('.')])
+        union = Expression([str(ord('+'))], is_extended=True)
 
-        lpar = Expression([ord('(')])
+        diff = Expression([str(ord('-'))], is_extended=True)
 
-        rpar = Expression([ord(')')])
+        _range = Expression([str(ord('.')), str(ord('.'))], is_extended=True)
+
+        lpar = Expression([str(ord('('))], is_extended=True)
+
+        rpar = Expression([str(ord(')'))], is_extended=True)
 
         self.build_dfa(ident, VarType.IDENT)
         self.build_dfa(number, VarType.NUMBER)
@@ -71,7 +120,9 @@ class CocolProcessor:
         self.build_dfa(_range, VarType.RANGE)
         self.build_dfa(lpar, VarType.LPAR)
         self.build_dfa(rpar, VarType.RPAR)
-        
+        self.build_dfa(chardf, VarType.CHARDF)
+
+        self.dfa = self.nfa.build_DFA(final_s = self.final_states)
 
     def format_set(self):
        pass
@@ -80,10 +131,5 @@ class CocolProcessor:
         tokens = None
         return tokens
 
-    def join_dfas(self):
-        
-        trans_func = {}
-
-        for dfa in self.dfas =
 
 
