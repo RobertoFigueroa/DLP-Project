@@ -2,9 +2,12 @@ COMPILER Test
 
 CHARACTERS
 
-letter = "abcafeafeaofae".
+letter = "abcdefghijk".
 digit = "0123456789".
 hexdigit = digit + "ABCDEF".
+tab = CHR(9).
+eol = CHR(10).
+operadores = "+-=()[]{}|.<>".
 
 KEYWORDS
 

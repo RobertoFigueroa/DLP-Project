@@ -103,9 +103,9 @@ class NFA(FA):
 
         final_states = []
         states = []
-        print("Final state", self.final_states)
+        # print("Final state", self.final_states)
         for tup in dStates:
-            print(tup)
+            # print(tup)
             states.append(tup[0])
             for state in tup[1]:
                 if state in self.final_states:

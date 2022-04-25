@@ -128,7 +128,25 @@ class CocolProcessor:
        pass
     
     def analyze(self, set_decl):
-        tokens = None
+        
+        tokens = []
+        curr_idx = 0
+        if '""' in set_decl:
+            try:
+                idx = set_decl.index('""')
+                set_decl = set_decl[:idx] + '" "' + set_decl[idx+2:]
+            except ValueError:
+                set_decl = set_decl
+        set_decl = [str(ord(i)) for i in set_decl]
+        # print(set_decl)
+        word = set_decl
+        size = len(set_decl)
+        while curr_idx < size:
+            token, idx = self.dfa.get_token(word)
+            tokens.append(token)
+            curr_idx += idx
+            word = set_decl[curr_idx:]
+
         return tokens
 
 

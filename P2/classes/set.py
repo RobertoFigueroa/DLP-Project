@@ -1,9 +1,9 @@
-from utils import (
+from classes.utils import (
     GetCharValue,
     GetElementType
 )
 
-from dtypes import (
+from classes.dtypes import (
     VarType,
     Variable,
     Character

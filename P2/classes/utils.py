@@ -1,5 +1,4 @@
 from distutils.filelist import findall
-from tkinter import S
 from classes.dtypes import Variable, VarType
 
 import codecs

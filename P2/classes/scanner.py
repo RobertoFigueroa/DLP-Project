@@ -1,6 +1,5 @@
-from xml.dom.pulldom import CHARACTERS
 from classes.buffer import Buffer
-from classes.set import DefSet
+from classes.cocol_tokens import CocolProcessor
 
 EOL = '\n'
 EOF = None
@@ -11,10 +10,12 @@ COCOR_SPECIFICATIONS = ['COMPILER', 'CHARACTERS', 'KEYWORDS',
 class Cocol:
     def __init__(self) -> None:
         self.name = None
-        self.characters = []
-        self.keyword = []
-        self.tokens = []
+        self.characters = {}
+        self.keyword = {}
+        self.tokens = {}
         self.ignore = {}
+        self.coco = CocolProcessor()
+        self.coco.generate_dfas()
 
     def __str__(self) -> str:
         return f"""
@@ -60,13 +61,12 @@ class Scanner:
                     self.next_line()
                     self.read_section("CHARACTERS")
 
-
         return self.coco_file
 
     
     def read_section(self, section):
 
-        if not any(word in COCOR_SPECIFICATIONS for word in self.current_line):
+        while not any(word in COCOR_SPECIFICATIONS for word in self.current_line):
 
             curr_line = " ".join(self.current_line)
 
@@ -84,11 +84,11 @@ class Scanner:
     def define_character(self, line):
 
         key, value = line.split("=", 1)
-        key.strip()
+        key = key.strip()
+        value = value.strip()
+        value = "".join(value.split(" "))
+        set_list = self.coco_file.coco.analyze(value)
+        
+        print(set_list)
 
-        set_ = DefSet(value, self.coco_file.characters)
-
-        value = list(set_.Set())
-
-        #final_set = 
 

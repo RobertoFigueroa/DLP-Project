@@ -55,16 +55,16 @@ class DFA(FA):
             current_state = next_state
             buff += chr(int(word[idx])) 
             idx += 1
-
-            if current_state.lexeme != None:
-                last_token = (Token(current_state.lexeme, buff), idx)
-            
-            if current_state == None:
+            if next_state == None:
                 if last_token:
                     return last_token
                 else:
                     raise Exception("Lex error in characters definition (no transition found)")
-        if last_token:
+
+            if current_state.lexeme != None:
+                last_token = (Token(current_state.lexeme, buff), idx)
+            
+        if last_token != None:
             return last_token
         else:
             raise Exception("Lex error in characters definition (found end of string)")
