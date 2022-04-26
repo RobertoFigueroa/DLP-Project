@@ -1,5 +1,5 @@
 from classes.buffer import Buffer
-from classes.cocol_tokens import CocolProcessor
+from classes.cocol_tokens import CocolProcessor, CocolProcessorTokens
 from classes.set_gen import SetGeneator
 from classes.dtypes import Token, Keyword
 
@@ -18,6 +18,8 @@ class Cocol:
         self.ignore = []
         self.coco = CocolProcessor()
         self.coco.generate_dfas()
+        self.tokens_process = CocolProcessorTokens()
+        self.tokens_process.generate_dfas()
 
     def __str__(self) -> str:
         return f"""
@@ -53,6 +55,7 @@ class Scanner:
         # Reads whole file
         while self.current_line != None:
 
+
             if any(word in COCOR_SPECIFICATIONS for word in self.current_line):
 
                 if "COMPILER" in self.current_line:
@@ -67,9 +70,20 @@ class Scanner:
                     self.next_line()
                     self.read_section("KEYWORDS")
 
+
                 elif "TOKENS" in self.current_line:
                     self.next_line()
                     self.read_section("TOKENS")
+
+                elif "PRODUCTIONS" in self.current_line:
+                    self.next_line()
+
+                elif "END" in self.current_line:
+                    print("Found end of file")
+                    self.next_line()
+
+            else:
+                self.next_line()
 
         return self.coco_file
 
@@ -85,6 +99,7 @@ class Scanner:
             self.get_key_value(curr_line, section)
             self.next_line()
 
+
                 
     def get_key_value(self, line, attr):
 
@@ -99,21 +114,35 @@ class Scanner:
 
     def define_token(self, line):
         ident, value = line.split('=', 1)
-        dent = ident.strip()
+        ident = ident.strip()
         value = value.strip()
+        context = None
 
         if 'EXCEPT' in value:
             kwd_index = value.index('EXCEPT')
             context = value[kwd_index:]
             value = value[:kwd_index]
 
+        value = value.strip()
+
+        set_list = self.coco_file.tokens_process.analyze(value)
         
+        # print(set_list)
+
+
+
+        self.coco_file.tokens.append(
+            Token(ident, set_list, context)
+        )
+        
+
+        # print("cocol characters:", self.coco_file)
+
 
     def define_keyword(self, line):
 
         ident, value = line.split('=', 1)
         ident = ident.strip()
-        value = value.replace('.', '')
         value = value.replace('"', '')
         value = value.strip()
 
@@ -136,7 +165,7 @@ class Scanner:
         value = "".join(value.split(" "))
         set_list = self.coco_file.coco.analyze(value)
         
-        print(set_list)
+        # print(set_list)
 
         _set = SetGeneator(set_list, self.coco_file.characters)
         _set.parse()

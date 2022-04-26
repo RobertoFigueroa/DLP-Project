@@ -126,12 +126,12 @@ class CocolProcessor:
         
         tokens = []
         curr_idx = 0
-        if '""' in set_decl:
-            try:
-                idx = set_decl.index('""')
-                set_decl = set_decl[:idx] + '" "' + set_decl[idx+2:]
-            except ValueError:
-                set_decl = set_decl
+        # if '""' in set_decl:
+        #     try:
+        #         idx = set_decl.index('""')
+        #         set_decl = set_decl[:idx] + '" "' + set_decl[idx+2:]
+        #     except ValueError:
+        #         set_decl = set_decl
         set_decl = [str(ord(i)) for i in set_decl]
         # print(set_decl)
         word = set_decl
@@ -149,9 +149,9 @@ class CocolProcessor:
 class CocolProcessorTokens(CocolProcessor):
 
     def __init__(self) -> None:
-        super.__init__()
+        super().__init__()
 
-    def generate_token_dfas(self):
+    def generate_dfas(self):
 
         letter = " | ".join([str(ord(ch)) for ch in string.ascii_letters])
         letter = letter.split(" ")
@@ -180,9 +180,9 @@ class CocolProcessorTokens(CocolProcessor):
 
         rkleene = Expression([str(ord('}'))], is_extended=True)
 
-        lpar = Expression([str(ord('('))], is_extended=True)
+        # lpar = Expression([str(ord('('))], is_extended=True)
 
-        rpar = Expression([str(ord(')'))], is_extended=True)
+        # rpar = Expression([str(ord(')'))], is_extended=True)
 
         lbrack = Expression([str(ord('['))], is_extended=True)
 
@@ -191,11 +191,12 @@ class CocolProcessorTokens(CocolProcessor):
         self.build_dfa(ident, VarType.IDENT)
         self.build_dfa(String, VarType.STRING)
         self.build_dfa(char, VarType.CHAR)
-        self.build_dfa(lpar, VarType.LPAR)
-        self.build_dfa(rpar, VarType.RPAR)
+        # self.build_dfa(lpar, VarType.LPAR)
+        # self.build_dfa(rpar, VarType.RPAR)
         self.build_dfa(lkleene, VarType.LKLEENE)
         self.build_dfa(rkleene, VarType.RKLEENE)
         self.build_dfa(lbrack, VarType.LBRACKET)
         self.build_dfa(rbrack, VarType.RBRACKET)
+        self.build_dfa(_or, VarType.OR)
 
         self.dfa = self.nfa.build_DFA(final_s = self.final_states)

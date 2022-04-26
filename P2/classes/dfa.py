@@ -51,6 +51,9 @@ class DFA(FA):
         buff = ''
         last_token = None
         while idx < word_len:
+            if word[idx] == '32':
+                if '"' not in buff:
+                    continue
             next_state = self.move(current_state, word[idx])
             current_state = next_state
             buff += chr(int(word[idx])) 

@@ -68,7 +68,6 @@ class SetGeneator:
 
     def gen_ident(self):
 
-        print(self.defs)
         
         set_id = [s for s in self.defs if s.ident == self.current_val.value] 
         if len(set_id) < 1:
