@@ -1,5 +1,3 @@
-from cv2 import sepFilter2D
-from numpy import var
 from classes.dtypes import VarType
 
 
@@ -29,23 +27,23 @@ class SetGeneator:
 
         while self.current_val != None:
 
-            if self.current_val.type == VarType.IDENT:
+            if self.current_val.ident == VarType.IDENT:
                 self.gen_ident()
                 self.get_next()
             
-            elif self.current_val.type == VarType.STRING:
+            elif self.current_val.ident == VarType.STRING:
                 self.gen_string()
                 self.get_next()
             
-            elif self.current_val.type == VarType.CHARDF:
+            elif self.current_val.ident == VarType.CHARDF:
                 self.gen_char()
                 self.get_next()
             
-            elif self.current_val.type == VarType.UNION:
+            elif self.current_val.ident == VarType.UNION:
                 self.gen_union()
                 self.get_next()
 
-            # elif self.current_val.type == VarType.DIFFERENCE:
+            # elif self.current_val.ident == VarType.DIFFERENCE:
             #     self.gen_diff()
             #     self.get_next()
 
@@ -54,23 +52,25 @@ class SetGeneator:
     
     def gen_union(self):
 
-        self.next()
+        self.get_next()
         
-        if self.current_val.type == VarType.IDENT:
+        if self.current_val.ident == VarType.IDENT:
             self.gen_ident()
         
-        if self.current_val.type == VarType.CHARDF:
+        if self.current_val.ident == VarType.CHARDF:
             self.gen_char()
         
-        if self.current_val.type == VarType.STRING:
+        if self.current_val.ident == VarType.STRING:
             self.gen_string()
         
 
                 
 
     def gen_ident(self):
+
+        print(self.defs)
         
-        set_id = [s for s in self.defs if s.value == self.current_val.value] 
+        set_id = [s for s in self.defs if s.ident == self.current_val.value] 
         if len(set_id) < 1:
             raise Exception(f"{self.current_val} is not defined")
         
@@ -91,13 +91,13 @@ class SetGeneator:
         self.get_next()
         expect_rpar = self.current_val
 
-        if expect_number.type != VarType.NUMBER:
+        if expect_number.ident != VarType.NUMBER:
             raise Exception(f"Error in CHR declaration, expected number found: {expect_number}")
         
-        if expect_rpar.type != VarType.RPAR:
+        if expect_rpar.ident != VarType.RPAR:
             raise Exception(f"Error in CHR declaration, expected close parenthesis found: {expect_rpar}")
 
-        self.final_set.add(expect_number)
+        self.final_set.add(expect_number.value)
 
 
 

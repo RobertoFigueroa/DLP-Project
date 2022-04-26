@@ -1,5 +1,5 @@
 
-from numpy import fromregex
+from numpy import fromregex, var
 from classes.alphabet import Alphabet
 from classes.dtypes import VarType
 import string
@@ -62,6 +62,7 @@ class CocolProcessor:
             self.nfa.add_transition(init_state, ddfa.init_state, EPSILON)
             self.nfa.add_transition(ddfa.final_states[0], final_state, EPSILON)
 
+
     def generate_dfas(self):
         open_quote_mark = "«"
         open_par = "܆"
@@ -95,10 +96,6 @@ class CocolProcessor:
         chardf = [str(ord("C")), str(ord("H")), str(ord("R")), str(ord("("))] 
         chardf = Expression(chardf, is_extended=True)
 
-        lbrack = Expression([str(ord('{'))], is_extended=True)
-
-        rbrack = Expression([str(ord('}'))], is_extended=True)
-
         union = Expression([str(ord('+'))], is_extended=True)
 
         diff = Expression([str(ord('-'))], is_extended=True)
@@ -113,8 +110,6 @@ class CocolProcessor:
         self.build_dfa(number, VarType.NUMBER)
         self.build_dfa(String, VarType.STRING)
         self.build_dfa(char, VarType.CHAR)
-        self.build_dfa(lbrack, VarType.LBRACKET)
-        self.build_dfa(rbrack, VarType.RBRACKET)
         self.build_dfa(union, VarType.UNION)
         self.build_dfa(diff, VarType.DIFFERENCE)
         self.build_dfa(_range, VarType.RANGE)
@@ -151,3 +146,56 @@ class CocolProcessor:
 
 
 
+class CocolProcessorTokens(CocolProcessor):
+
+    def __init__(self) -> None:
+        super.__init__()
+
+    def generate_token_dfas(self):
+
+        letter = " | ".join([str(ord(ch)) for ch in string.ascii_letters])
+        letter = letter.split(" ")
+        
+        digit = " | ".join([str(ord(d)) for d in string.digits])
+        digit = digit.split(" ")
+    
+        any_but_quote = " | ".join([str(ord(s)) for s in string.printable.replace('"', "")])
+        any_but_quote = any_but_quote.split(" ")
+
+        any_but_apostrophe = " | ".join([str(ord(s)) for s in string.printable.replace("'", "")])
+        any_but_apostrophe = any_but_apostrophe.split(" ")
+
+        ident = ['('] + letter + [')'] + ['('] + letter + ['|'] + digit + [')'] + ['*']
+        ident = Expression(ident, is_extended=True)
+
+        String = [str(ord('"'))] + ['('] + any_but_quote + [')'] + ['*'] + [str(ord('"'))]
+        String = Expression(String, is_extended=True)
+
+        char = [str(ord("\\"))] + [str(ord("'"))] + ['('] + any_but_apostrophe + [')'] + [str(ord("\\"))] + [str(ord("'"))]
+        char = Expression(char, is_extended=True)
+        
+        _or = Expression([str(ord('|'))], is_extended=True)
+
+        lkleene = Expression([str(ord('{'))], is_extended=True)
+
+        rkleene = Expression([str(ord('}'))], is_extended=True)
+
+        lpar = Expression([str(ord('('))], is_extended=True)
+
+        rpar = Expression([str(ord(')'))], is_extended=True)
+
+        lbrack = Expression([str(ord('['))], is_extended=True)
+
+        rbrack = Expression([str(ord(']'))], is_extended=True)
+
+        self.build_dfa(ident, VarType.IDENT)
+        self.build_dfa(String, VarType.STRING)
+        self.build_dfa(char, VarType.CHAR)
+        self.build_dfa(lpar, VarType.LPAR)
+        self.build_dfa(rpar, VarType.RPAR)
+        self.build_dfa(lkleene, VarType.LKLEENE)
+        self.build_dfa(rkleene, VarType.RKLEENE)
+        self.build_dfa(lbrack, VarType.LBRACKET)
+        self.build_dfa(rbrack, VarType.RBRACKET)
+
+        self.dfa = self.nfa.build_DFA(final_s = self.final_states)
