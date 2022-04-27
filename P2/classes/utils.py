@@ -96,3 +96,5 @@ def GetElementType(string , char_set):
         char = set(GetCharValue(string))
 
         return Variable(VarType.CHAR, char)
+
+

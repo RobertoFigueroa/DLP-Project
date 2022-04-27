@@ -1,8 +1,7 @@
 # Ref: https://github.com/OJP98/py-scanner-generator
 
 from classes.scanner import Scanner
-
-from fileinput import filename
+from classes.parser import Parser
 from classes.expression import Expression
 
 import string 
@@ -13,19 +12,30 @@ def main(file_name : str) -> int:
 
     file_analyzed = sc.analyze_file()
 
-    print(file_analyzed)
+    # print(file_analyzed)
+
+    p = Parser(
+        file_analyzed.characters,
+        file_analyzed.keyword,
+        file_analyzed.tokens
+    )
+
+    
+    p.parse()
+
+    # print("Result is: ", p.result)
 
         # --- Build direct DFA ---
-    # exp = Expression(reg_exp, is_extended=True)
-    # root = exp.anlyze_build_tree()
-    # leafs, nodes = root.build_firstlast_pos()
-    # followpos = root.followpos(leafs, nodes)
-    # directed_dfa = root.build_direct_DFA(exp.alphabet.get_alphabet(), followpos, leafs)
-    # directed_dfa.get_image()
-    # print('*'*20)
-    # print("DFA (direct)")
-    # print('*'*20)
-    # print(directed_dfa)
+    exp = Expression(p.get_result(), is_extended=True)
+    root = exp.anlyze_build_tree()
+    leafs, nodes = root.build_firstlast_pos()
+    followpos = root.followpos(leafs, nodes)
+    directed_dfa = root.build_direct_DFA(exp.alphabet.get_alphabet(), followpos, leafs)
+    directed_dfa.get_image()
+    print('*'*20)
+    print("DFA (direct)")
+    print('*'*20)
+    print(directed_dfa)
 
 
 

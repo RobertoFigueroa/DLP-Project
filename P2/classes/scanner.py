@@ -99,7 +99,6 @@ class Scanner:
             self.get_key_value(curr_line, section)
             self.next_line()
 
-
                 
     def get_key_value(self, line, attr):
 
@@ -128,8 +127,6 @@ class Scanner:
         set_list = self.coco_file.tokens_process.analyze(value)
         
         # print(set_list)
-
-
 
         self.coco_file.tokens.append(
             Token(ident, set_list, context)

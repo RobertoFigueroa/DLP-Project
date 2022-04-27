@@ -200,3 +200,28 @@ class CocolProcessorTokens(CocolProcessor):
         self.build_dfa(_or, VarType.OR)
 
         self.dfa = self.nfa.build_DFA(final_s = self.final_states)
+    
+     
+    def analyze(self, set_decl):
+        
+        tokens = []
+        curr_idx = 0
+
+        set_decl = [str(ord(i)) for i in set_decl]
+        # print(set_decl)
+        word = set_decl
+        size = len(set_decl)
+        while curr_idx < size:
+            token, idx = self.dfa.get_token(word)
+            if token.ident == VarType.STRING:
+                if not token.value.isdigit():
+                    res = []
+                    for i in token.value:
+                        if i != '"':
+                            res.append(str(ord(i)))
+                    token.value = res
+            tokens.append(token)
+            curr_idx += idx
+            word = set_decl[curr_idx:]
+
+        return tokens

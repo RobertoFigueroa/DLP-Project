@@ -2,8 +2,8 @@ COMPILER Test
 
 CHARACTERS
 
-letter = "abcdefghijk".
-digit = "0123456789".
+letter = "abc".
+digit = "01".
 hexdigit = digit + "ABCDEF".
 tab = CHR(9).
 eol = CHR(10).
