@@ -7,7 +7,7 @@ class Expression(object):
 
     def __init__(self, string : list, is_extended=False) -> None:
         if is_extended:
-            self.string =['('] + string + [')'] + ['§'] 
+            self.string =['('] + string + [')'] + ['፨'] 
         else:
             self.string = string
         self.alphabet = Alphabet()

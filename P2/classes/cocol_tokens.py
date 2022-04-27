@@ -126,12 +126,12 @@ class CocolProcessor:
         
         tokens = []
         curr_idx = 0
-        # if '""' in set_decl:
-        #     try:
-        #         idx = set_decl.index('""')
-        #         set_decl = set_decl[:idx] + '" "' + set_decl[idx+2:]
-        #     except ValueError:
-        #         set_decl = set_decl
+        if '""' in set_decl:
+            try:
+                idx = set_decl.index('""')
+                set_decl = set_decl[:idx] + '" "' + set_decl[idx+2:]
+            except ValueError:
+                set_decl = set_decl
         set_decl = [str(ord(i)) for i in set_decl]
         # print(set_decl)
         word = set_decl
@@ -229,10 +229,11 @@ class CocolProcessorTokens(CocolProcessor):
 
 class CocolParser(CocolProcessor):
 
-    def __init__(self, expresions) -> None:
+    def __init__(self, expresions, ignore) -> None:
         super().__init__()
 
         self.expresions = expresions
+        self.ignore = ignore
     
     def generate_dfas(self):
         
@@ -241,3 +242,4 @@ class CocolParser(CocolProcessor):
             self.build_dfa(exp.value, exp.ident)
 
         self.dfa = self.nfa.build_DFA(final_s = self.final_states)
+        self.dfa.ignore = self.ignore

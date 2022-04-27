@@ -4,7 +4,7 @@ from classes.expression import Expression
 
 class Parser:
 
-    def __init__(self, characters, keywords, tokens) -> None:
+    def __init__(self, characters, keywords, tokens, ignore) -> None:
         self.raw_characters = characters
         self.characters = []
         self.raw_keywords = keywords
@@ -18,6 +18,7 @@ class Parser:
         self.parse_tokens = []
         self.iter = None
         self.temp_res = []
+        self.ignore = ignore
 
     def format_(self, iterable):
         result = []

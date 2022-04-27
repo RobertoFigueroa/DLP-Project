@@ -19,32 +19,34 @@ def main(file_name : str) -> int:
 
     print(file_analyzed)
 
-    # p = Parser(
-    #     file_analyzed.characters,
-    #     file_analyzed.keyword,
-    #     file_analyzed.tokens
-    # )
+    p = Parser(
+        file_analyzed.characters,
+        file_analyzed.keyword,
+        file_analyzed.tokens,
+        file_analyzed.ignore
+
+    )
 
     
-    # p.parse()
+    p.parse()
 
-    # print("Result is: ", p.get_result())
+    print("Result is: ", p.get_result())
 
-    # cocol_parser = CocolParser(p.get_result())
-    # cocol_parser.generate_dfas()
-    # dfa = cocol_parser.dfa
-    # dfa.get_image()
+    cocol_parser = CocolParser(p.get_result(), p.ignore)
+    cocol_parser.generate_dfas()
+    dfa = cocol_parser.dfa
+    dfa.get_image()
 
-    # file_name = "test.txt"
-    # f = open(file_name)
-    # _file = f.readlines()
-    # stream = []
-    # for i in _file:
-    #     for j in i:
-    #         stream.append(str(ord(j)))
+    file_name = "test.txt"
+    f = open(file_name)
+    _file = f.readlines()
+    stream = []
+    for i in _file:
+        for j in i:
+            stream.append(str(ord(j)))
 
-    # tokens = dfa.get_tokens(stream)
-    # print("Tokens encontrados \n", tokens)
+    tokens = dfa.get_tokens(stream)
+    print("Tokens encontrados \n", tokens)
     # _file = open("./sandbox/dfa", "wb")
     # pickle.dump(dfa, _file)
     # _file.close()

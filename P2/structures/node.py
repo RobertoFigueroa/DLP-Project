@@ -317,7 +317,7 @@ class Node:
 
             unmarked_state = self.check_marked(dStates)
 
-        end_index = [i for i,val in enumerate(leaf_nodes) if val.value == "§" ]
+        end_index = [i for i,val in enumerate(leaf_nodes) if val.value == "፨" ]
 
         # print(dStates)
 
@@ -330,7 +330,7 @@ class Node:
                     final_states.append(state[0])
             states.append(state[0])
 
-        new_alphabet = [i for i in alphabet if i != self.epsilon and i != "§"]
+        new_alphabet = [i for i in alphabet if i != self.epsilon and i != "፨"]
 
         init_state = dStates[0][0]
 

@@ -1,18 +1,19 @@
 from classes.buffer import Buffer
 from classes.cocol_tokens import CocolProcessor, CocolProcessorTokens
 from classes.set_gen import SetGeneator
-from classes.dtypes import Token, Keyword
+from classes.dtypes import Token, Keyword, VarType
 
 EOL = '\n'
 EOF = None
 
 COCOR_SPECIFICATIONS = ['COMPILER', 'CHARACTERS', 'KEYWORDS',
                         'IGNORE', 'TOKENS', 'END', 'PRODUCTIONS']
-
+ANY = [str(i) for i in range(0,256)]
 class Cocol:
     def __init__(self) -> None:
         self.name = None
         self.characters = []
+        self.characters.append(Token('ANY', set(ANY)))
         self.keyword = []
         self.tokens = []
         self.ignore = []
@@ -78,6 +79,10 @@ class Scanner:
                 elif "PRODUCTIONS" in self.current_line:
                     self.next_line()
 
+                elif "IGNORE" in self.current_line:
+                    self.read_ignore()
+                    self.next_line()
+
                 elif "END" in self.current_line:
                     # print("Found end of file")
                     self.next_line()
@@ -87,7 +92,17 @@ class Scanner:
 
         return self.coco_file
 
-    
+    def read_ignore(self):
+        curr_set = ' '.join(self.current_line)
+        line = curr_set.split('IGNORE', 1)[1]
+        line = line.replace('.', '')
+        line = line.strip()
+        print("This ignofre", line)
+  
+        for i in self.coco_file.characters:
+            if i.ident == line:
+                self.coco_file.ignore += list(i.value)
+
     def read_section(self, section):
 
         while not any(word in COCOR_SPECIFICATIONS for word in self.current_line):
@@ -160,6 +175,7 @@ class Scanner:
         key = key.strip()
         value = value.strip()
         value = "".join(value.split(" "))
+        print("This is value:", value)
         set_list = self.coco_file.coco.analyze(value)
         
         # print(set_list)

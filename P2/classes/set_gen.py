@@ -8,6 +8,7 @@ class SetGeneator:
     
     def __init__(self, _set, prev_defs) -> None:
         self._set = iter(_set)
+        self.raw_set = _set
         self.defs = prev_defs
         self.current_val = None
         self.prev_val = None
@@ -19,20 +20,20 @@ class SetGeneator:
         curr = self.current_val
         prev = self.prev_val
 
-        self.get_next()
-        _curr = self.current_val
-        _prev = self.prev_val
+        # self.get_next()
+        idx = self.raw_set.index(curr)
+        if idx+1 < len(self.raw_set):
+            return self.raw_set[idx+1], None
+        
+        return None, None
 
-        self.current_val = curr
-        self.prev_val = prev
-
-        return (_curr, _prev)
     
     def get_next(self):
 
         try:
             self.prev_val = self.current_val
             self.current_val = next(self._set)
+            print("in next funciton",self.current_val)
         
         except StopIteration:
             self.current_val = None
@@ -42,6 +43,7 @@ class SetGeneator:
     def parse(self):
 
         while self.current_val != None:
+            # print("next is", self.current_val)
 
             if self.current_val.ident == VarType.IDENT:
                 self.gen_ident()
@@ -63,20 +65,55 @@ class SetGeneator:
                 self.gen_diff()
                 self.get_next()
 
+            elif self.current_val.ident == VarType.CHAR:
+                self.gen_ch()
+                self.get_next()
         
+    def gen_ch(self, ret_val=False):
+        
+        val = self.current_val.value.strip("\\'")
+        val = str(ord(val))
+
+        _next, _prev = self.peek()
+
+
+        if _next != None:
+            if _next.ident == VarType.RANGE:
+                self.get_next() #range
+                self.get_next() #ch
+                to = self.current_val.value
+                to = to.strip("\\'")
+                if ret_val:
+                    return [str(i) for i in range(int(val), ord(to)+1)]
+
+                [self.final_set.add(str(i)) for i in range(int(val), ord(to)+1)]
+                return 
+        
+        if ret_val:
+            return [val]
+        
+        self.final_set.add(val)
 
     def gen_diff(self):
         
         self.get_next()
+    
 
         if self.current_val.ident == VarType.IDENT:
-            self.gen_ident(ret_val=True)
+            diff = self.gen_ident(ret_val=True)
+            self.final_set.difference_update(diff)
         
-        if self.current_val.ident == VarType.CHARDF:
-            self.gen_char(ret_val=True)
+        elif self.current_val.ident == VarType.CHARDF:
+            diff = self.gen_char(ret_val=True)
+            self.final_set.difference_update(diff)
         
-        if self.current_val.ident == VarType.STRING:
-            self.gen_string(ret_val=True)
+        elif self.current_val.ident == VarType.STRING:
+            diff = self.gen_string(ret_val=True)
+            self.final_set.difference_update(diff)
+
+        elif self.current_val.ident == VarType.CHAR:
+            diff = self.gen_ch(ret_val=True)
+            self.final_set.difference(diff)
         
 
     def gen_union(self):
@@ -133,13 +170,14 @@ class SetGeneator:
                 self.final_set.add(str(ord(char)))
              
     def gen_char(self, ret_val =  False):
-        
         self.get_next()
         expect_number = self.current_val
         self.get_next()
         expect_rpar = self.current_val
+
         
         _next, _prev = self.peek()
+        # print("current", self.current_val)
 
         if expect_number.ident != VarType.NUMBER:
             raise Exception(f"Error in CHR declaration, expected number found: {expect_number}")
@@ -160,7 +198,7 @@ class SetGeneator:
                 return 
         
         if ret_val:
-            return expect_number.value
+            return [str(expect_number.value)]
         
         self.final_set.add(expect_number.value)
 

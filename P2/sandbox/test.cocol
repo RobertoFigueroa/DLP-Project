@@ -2,11 +2,8 @@ COMPILER Test
 
 CHARACTERS
 
-letter = "abc".
-upletter = "A".."B".
-digit = "1".
-downletter = "1".."9".
-dl = digit+letter.
+letter = "ABCZ".
+a = " ".
 
 KEYWORDS
 
@@ -15,8 +12,9 @@ while="while".
 
 TOKENS
 
-l = letter.
-d = digit.
+let = {letter}.
+
+IGNORE a.
 
 PRODUCTIONS
 

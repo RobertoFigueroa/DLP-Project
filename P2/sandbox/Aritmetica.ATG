@@ -15,6 +15,7 @@ do = "do".
 if = "if".
 switch = "switch"
 
+
 TOKENS
 
 ident = letter{letter|digit} EXCEPT KEYWORDS.

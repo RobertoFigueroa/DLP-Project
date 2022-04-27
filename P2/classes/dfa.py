@@ -13,6 +13,7 @@ class DFA(FA):
         
         self.trans_func = self.trans_func[0]
         self.init_state = self.init_state[0]
+        self.ignore = None
 
     def move(self, state, symbol):
         if state:
@@ -106,35 +107,36 @@ class DFA(FA):
         buff = ''
         last_token = None
         while idx < word_len:
-            next_state = self.move(current_state, word[idx])
-            current_state = next_state
-            buff += chr(int(word[idx]))
+            if word[idx] not in self.ignore:
+                next_state = self.move(current_state, word[idx])
+                current_state = next_state
+                buff += chr(int(word[idx]))
 
-            if next_state == None:
-                if last_token:
-                    tokens.append(last_token,)
+                if next_state == None:
+                    if last_token:
+                        tokens.append(last_token,)
 
-                
-                if self.move(self.init_state, word[idx]) != None:
-                    current_state = self.init_state
-                    buff = ''
-                    last_token = None
-                    idx -=1
-                else:
-                    print(f"Error léxico encontro--> {chr(int(word[idx]))}")
-                    current_state = self.init_state
-                    buff = ''
-                    last_token = None
+                    
+                    if self.move(self.init_state, word[idx]) != None:
+                        current_state = self.init_state
+                        buff = ''
+                        last_token = None
+                        idx -=1
+                    else:
+                        print(f"Error léxico encontro--> {chr(int(word[idx]))}")
+                        current_state = self.init_state
+                        buff = ''
+                        last_token = None
 
 
-            if current_state in self.final_states:
-                last_token = Token(current_state.lexeme, buff)
-                # current_state = self.init_state
+                if current_state in self.final_states:
+                    last_token = Token(current_state.lexeme, buff)
+                    # current_state = self.init_state
             idx += 1
             
-        if last_token != None:
-            tokens.append(last_token)
-        else:
-            print(f"Error léxico encontro: {chr(int(word[idx-1]))}")
+        # if last_token != None:
+        #     tokens.append(last_token)
+        # else:
+        #     print(f"Error léxico encontro: {chr(int(word[idx-1]))}")
 
         return tokens
