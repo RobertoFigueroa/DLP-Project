@@ -70,13 +70,13 @@ class SetGeneator:
         self.get_next()
 
         if self.current_val.ident == VarType.IDENT:
-            self.gen_ident()
+            self.gen_ident(ret_val=True)
         
         if self.current_val.ident == VarType.CHARDF:
-            self.gen_char()
+            self.gen_char(ret_val=True)
         
         if self.current_val.ident == VarType.STRING:
-            self.gen_string()
+            self.gen_string(ret_val=True)
         
 
     def gen_union(self):
@@ -111,20 +111,28 @@ class SetGeneator:
             [self.final_set.add(i) for i in set_id.value]
 
 
-    def gen_string(self):
+    def gen_string(self, ret_val=False):
         string_set = self.current_val.value.strip('"')
         _next, prev = self.peek()
         if _next:
             if _next.ident == VarType.RANGE:
-
                 self.get_next() #range
                 to = self.current_val # espero in stringde un caracter como el archivo sera si errors se puede asumir que así lo será
-                [self.final_set.add(str(i)) for i in range(ord(string_set), ord(to.value.strip('"'))+1)]
-                
-        for char in self.current_val.value:
-            self.final_set.add(str(ord(char)))
-
-    def gen_char(self):
+                if not ret_val:
+                    [self.final_set.add(str(i)) for i in range(ord(string_set), ord(to.value.strip('"'))+1)]
+                    return
+                else:
+                    return [str(i) for i in range(ord(string_set), ord(to.value.strip('"'))+1)]
+        if ret_val:
+            list_ = []
+            for char in string_set:
+                list_.append(str(ord(char)))
+            return list_
+        else:
+            for char in string_set:
+                self.final_set.add(str(ord(char)))
+             
+    def gen_char(self, ret_val =  False):
         
         self.get_next()
         expect_number = self.current_val
@@ -145,9 +153,14 @@ class SetGeneator:
                 self.get_next() #number
                 to = self.current_val
                 self.get_next() #rpar
+                if ret_val:
+                    return [str(i) for i in range(int(expect_number.value), int(to.value)+1)]
 
                 [self.final_set.add(str(i)) for i in range(int(expect_number.value), int(to.value)+1)]
                 return 
+        
+        if ret_val:
+            return expect_number.value
         
         self.final_set.add(expect_number.value)
 

@@ -3,9 +3,10 @@ COMPILER Test
 CHARACTERS
 
 letter = "abc".
-upletter = "A".."Z".
+upletter = "A".."B".
 digit = "1".
 downletter = "1".."9".
+dl = digit+letter.
 
 KEYWORDS
 
