@@ -225,3 +225,19 @@ class CocolProcessorTokens(CocolProcessor):
             word = set_decl[curr_idx:]
 
         return tokens
+
+
+class CocolParser(CocolProcessor):
+
+    def __init__(self, expresions) -> None:
+        super().__init__()
+
+        self.expresions = expresions
+    
+    def generate_dfas(self):
+        
+        for exp in self.expresions:
+
+            self.build_dfa(exp.value, exp.ident)
+
+        self.dfa = self.nfa.build_DFA(final_s = self.final_states)

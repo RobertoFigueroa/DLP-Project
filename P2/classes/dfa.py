@@ -1,5 +1,5 @@
-from asyncio import current_task
-from urllib.parse import non_hierarchical
+
+
 from classes.fa import FA
 from classes.state import State
 from time import time
@@ -96,3 +96,45 @@ class DFA(FA):
     def __repr__(self) -> str:
         return f"dfa-{time()}"
 
+
+    def get_tokens(self, word : str):
+        tokens = []
+        current_state = self.init_state
+        cs = self.init_state
+        word_len = len(word)
+        idx = 0
+        buff = ''
+        last_token = None
+        while idx < word_len:
+            next_state = self.move(current_state, word[idx])
+            current_state = next_state
+            buff += chr(int(word[idx]))
+
+            if next_state == None:
+                if last_token:
+                    tokens.append(last_token,)
+
+                
+                if self.move(self.init_state, word[idx]) != None:
+                    current_state = self.init_state
+                    buff = ''
+                    last_token = None
+                    idx -=1
+                else:
+                    print(f"Error léxico encontro--> {chr(int(word[idx]))}")
+                    current_state = self.init_state
+                    buff = ''
+                    last_token = None
+
+
+            if current_state in self.final_states:
+                last_token = Token(current_state.lexeme, buff)
+                # current_state = self.init_state
+            idx += 1
+            
+        if last_token != None:
+            tokens.append(last_token)
+        else:
+            print(f"Error léxico encontro: {chr(int(word[idx-1]))}")
+
+        return tokens

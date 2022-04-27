@@ -79,7 +79,7 @@ class Scanner:
                     self.next_line()
 
                 elif "END" in self.current_line:
-                    print("Found end of file")
+                    # print("Found end of file")
                     self.next_line()
 
             else:

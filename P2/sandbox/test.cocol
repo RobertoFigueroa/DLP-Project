@@ -1,0 +1,22 @@
+COMPILER Test
+
+CHARACTERS
+
+letter = "abc".
+upletter = "A".."Z".
+digit = "1".
+downletter = "1".."9".
+
+KEYWORDS
+
+if="if".
+while="while".
+
+TOKENS
+
+l = letter.
+d = digit.
+
+PRODUCTIONS
+
+END Test

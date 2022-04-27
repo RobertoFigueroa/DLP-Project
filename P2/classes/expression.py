@@ -186,5 +186,6 @@ class Expression(object):
         self.alphabet.symbols.pop()
         return symbols.top()
 
-    
+    def __repr__(self) -> str:
+        return f"->{self.string}"
         
