@@ -1,0 +1,21 @@
+digraph fa {
+	17 [label=17]
+	18 [label=18]
+	19 [label=19]
+	20 [label=20]
+	21 [label=21]
+	22 [label=22]
+	17
+	18
+	19 [shape=doublecircle]
+	20
+	21
+	22
+	17 -> 18 [label=a]
+	18 -> 19 [label=b]
+	19 -> 20 [label="#"]
+	20 -> 21 [label=a]
+	21 -> 22 [label=b]
+	"" [shape=plaintext]
+	"" -> 17
+}

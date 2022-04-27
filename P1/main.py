@@ -57,7 +57,7 @@ def main(reg_exp : str, word : str) -> int:
     leafs, nodes = root.build_firstlast_pos()
     followpos = root.followpos(leafs, nodes)
     directed_dfa = root.build_direct_DFA(exp.alphabet.get_alphabet(), followpos, leafs)
-    # directed_dfa.get_image()
+    directed_dfa.get_image()
     print('*'*20)
     print("DFA (direct)")
     print('*'*20)
