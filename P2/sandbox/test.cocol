@@ -2,8 +2,9 @@ COMPILER Test
 
 CHARACTERS
 
-letter = "ABCZ".
-a = " ".
+
+letter = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".
+digit = "0123456789".
 
 KEYWORDS
 
@@ -12,9 +13,7 @@ while="while".
 
 TOKENS
 
-let = {letter}.
-
-IGNORE a.
+id = letter{letter}.
 
 PRODUCTIONS
 

@@ -33,7 +33,7 @@ class SetGeneator:
         try:
             self.prev_val = self.current_val
             self.current_val = next(self._set)
-            print("in next funciton",self.current_val)
+            # print("in next funciton",self.current_val)
         
         except StopIteration:
             self.current_val = None

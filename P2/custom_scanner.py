@@ -20,7 +20,7 @@ for i in _file:
 _f = open("dfa", "rb")
 dfa = pickle.load(_f)
         
-tokens = dfa.evaluate(stream)
+tokens = dfa.get_tokens(stream)
         
 print(tokens)
         

@@ -5,7 +5,7 @@
 
 class GenCode:
 
-    def __init__(self, file_name="./sandbox/custom_scanner.py") -> None:
+    def __init__(self, file_name="custom_scanner.py") -> None:
         self.file = open(file_name, "w")
 
     def write_imports(self):

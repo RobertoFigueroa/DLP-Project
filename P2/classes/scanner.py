@@ -97,7 +97,7 @@ class Scanner:
         line = curr_set.split('IGNORE', 1)[1]
         line = line.replace('.', '')
         line = line.strip()
-        print("This ignofre", line)
+        # print("This ignofre", line)
   
         for i in self.coco_file.characters:
             if i.ident == line:
@@ -175,7 +175,7 @@ class Scanner:
         key = key.strip()
         value = value.strip()
         value = "".join(value.split(" "))
-        print("This is value:", value)
+        # print("This is value:", value)
         set_list = self.coco_file.coco.analyze(value)
         
         # print(set_list)

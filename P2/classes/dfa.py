@@ -134,9 +134,10 @@ class DFA(FA):
                     # current_state = self.init_state
             idx += 1
             
-        # if last_token != None:
-        #     tokens.append(last_token)
-        # else:
-        #     print(f"Error léxico encontro: {chr(int(word[idx-1]))}")
+        if last_token != None:
+            if last_token != tokens[-1]:
+                tokens.append(last_token)
+        else:
+            print(f"Error léxico encontro--> {chr(int(word[idx-1]))}")
 
         return tokens
