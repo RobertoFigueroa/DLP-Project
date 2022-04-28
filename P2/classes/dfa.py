@@ -54,7 +54,9 @@ class DFA(FA):
         while idx < word_len:
             if word[idx] == '32':
                 if '"' not in buff:
-                    continue
+                    if last_token != None:
+                        return last_token
+                    idx += 1
             next_state = self.move(current_state, word[idx])
             current_state = next_state
             buff += chr(int(word[idx])) 
@@ -105,9 +107,13 @@ class DFA(FA):
         word_len = len(word)
         idx = 0
         buff = ''
+        if word_len == 0:
+            return tokens
         last_token = None
         while idx < word_len:
-            if word[idx] not in self.ignore:
+            if word[idx] in self.ignore:
+                idx += 1
+            else:
                 next_state = self.move(current_state, word[idx])
                 current_state = next_state
                 buff += chr(int(word[idx]))
@@ -132,10 +138,13 @@ class DFA(FA):
                 if current_state in self.final_states:
                     last_token = Token(current_state.lexeme, buff)
                     # current_state = self.init_state
-            idx += 1
+                idx += 1
             
         if last_token != None:
-            if last_token != tokens[-1]:
+            if len(tokens) >0:
+                if last_token != tokens[-1]:
+                    tokens.append(last_token)
+            else:
                 tokens.append(last_token)
         else:
             print(f"Error léxico encontro--> {chr(int(word[idx-1]))}")

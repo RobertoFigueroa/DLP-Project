@@ -1,4 +1,5 @@
-# Ref: https://github.com/OJP98/py-scanner-generator
+# Ref: https://github.com/aixp/pycoco
+# Ref:https://github.com/OJP98/py-scanner-generator
 
 from classes.scanner import Scanner
 from classes.parser import Parser
@@ -29,8 +30,12 @@ def main(file_name : str) -> int:
 
     
     p.parse()
+    p.sort()
 
+    # print("*"*20)
     # print("Result is: ", p.get_result())
+    # print("*"*20)
+
 
     cocol_parser = CocolParser(p.get_result(), p.ignore)
     cocol_parser.generate_dfas()
@@ -47,9 +52,11 @@ def main(file_name : str) -> int:
 
     # tokens = dfa.get_tokens(stream)
     # print("Tokens encontrados \n", tokens)
-    # _file = open("dfa", "wb")
-    # pickle.dump(dfa, _file)
-    # _file.close()
+
+
+    _file = open("dfa", "wb")
+    pickle.dump(dfa, _file)
+    _file.close()
 
 
     code = GenCode()

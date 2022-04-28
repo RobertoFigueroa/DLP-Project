@@ -208,7 +208,7 @@ class CocolProcessorTokens(CocolProcessor):
         curr_idx = 0
 
         set_decl = [str(ord(i)) for i in set_decl]
-        # print(set_decl)
+        print(set_decl)
         word = set_decl
         size = len(set_decl)
         while curr_idx < size:

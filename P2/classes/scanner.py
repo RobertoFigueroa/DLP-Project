@@ -64,32 +64,43 @@ class Scanner:
                     self.next_line()
                 
                 elif "CHARACTERS" in self.current_line:
+                    print("Reading characters")
                     self.next_line()
                     self.read_section("CHARACTERS")
 
                 elif "KEYWORDS" in self.current_line:
+                    print("Reading keywords")
+
                     self.next_line()
                     self.read_section("KEYWORDS")
 
 
                 elif "TOKENS" in self.current_line:
+                    print("Reading tokens")
+
                     self.next_line()
                     self.read_section("TOKENS")
 
                 elif "PRODUCTIONS" in self.current_line:
+                    print("Reading productions")
+
                     self.next_line()
 
                 elif "IGNORE" in self.current_line:
+                    print("Reading ignores")
+
                     self.read_ignore()
                     self.next_line()
 
                 elif "END" in self.current_line:
+                    print("Reading endfile")
+
                     # print("Found end of file")
                     self.next_line()
 
             else:
                 self.next_line()
-
+        print(self.coco_file)
         return self.coco_file
 
     def read_ignore(self):
@@ -105,16 +116,20 @@ class Scanner:
 
     def read_section(self, section):
 
+        joined_set = ''
+
         while not any(word in COCOR_SPECIFICATIONS for word in self.current_line):
 
             curr_line = " ".join(self.current_line)
 
-            # TODO: Check for other ways to set 
-            curr_line = curr_line[:-1]
-            self.get_key_value(curr_line, section)
-            self.next_line()
-
+            if '(.' in curr_line[:2]:
                 
+                self.ReadComment()
+            else:
+                curr_line = curr_line[:-1]
+                self.get_key_value(curr_line, section)
+                self.next_line()
+
     def get_key_value(self, line, attr):
 
         if attr == "CHARACTERS":
@@ -125,6 +140,10 @@ class Scanner:
 
         if attr == "TOKENS":
             self.define_token(line)
+
+    def ReadComment(self):
+        while not '.)' in self.curr_line:
+            self.next_line()
 
     def define_token(self, line):
         ident, value = line.split('=', 1)

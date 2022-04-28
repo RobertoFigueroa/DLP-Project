@@ -23,13 +23,13 @@ string = comillas stringletter{stringletter} comillas.
 
 char = "'"["/"]letter"'".
 charnumber = "CHR("digit{digit}")".
-charinterval = "CHR("digit{digit}")"" .. ""CHR("digit{digit}")".
+charinterval = "CHR("digit{digit}")""..""CHR("digit{digit}")".
 
 nontoken = MyANY.
 startcode = "(.".
 endcode = ".)".
 
-IGNORE SET ignore
+IGNORE ignore
 
 
 END Cocol

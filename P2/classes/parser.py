@@ -20,6 +20,7 @@ class Parser:
         self.temp_res = []
         self.ignore = ignore
 
+
     def format_(self, iterable):
         result = []
         for element in iterable:
@@ -60,6 +61,20 @@ class Parser:
         #         result.append(temp_res)
         # return result
 
+    def sort(self):
+        last_tokens = []
+        first_tokens = []
+        for i in self.result:
+            if i.context != None:
+                last_tokens.append(i)
+            else:
+                first_tokens.append(i)
+        
+        self.result = first_tokens + last_tokens
+
+
+
+
     def parse(self):
 
         for token in self.tokens:
@@ -70,6 +85,7 @@ class Parser:
                     if to_append != None:
                         self.append_2_result(to_append)
                     else:
+                        print("Error with: ", _def.ident, _def.value)
                         raise Exception(f"Error en definicion de token, conjunto no encontrado")
                 
                 elif _def.ident == VarType.STRING:
@@ -98,7 +114,8 @@ class Parser:
                 Expression(
                     self.temp_res,
                     is_extended=True
-            )))
+                ), token.context
+            ))
             self.temp_res = []
 
         for keyword in self.keywords:

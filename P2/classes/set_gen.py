@@ -150,16 +150,20 @@ class SetGeneator:
 
     def gen_string(self, ret_val=False):
         string_set = self.current_val.value.strip('"')
+
         _next, prev = self.peek()
         if _next:
             if _next.ident == VarType.RANGE:
-                self.get_next() #range
+                self.get_next() # range
+                self.get_next() # string
                 to = self.current_val # espero in stringde un caracter como el archivo sera si errors se puede asumir que así lo será
+                to = to.value.strip('"').strip()
                 if not ret_val:
-                    [self.final_set.add(str(i)) for i in range(ord(string_set), ord(to.value.strip('"'))+1)]
+                    print("----->", to)
+                    [self.final_set.add(str(i)) for i in range(ord(string_set), ord(to)+1)]
                     return
                 else:
-                    return [str(i) for i in range(ord(string_set), ord(to.value.strip('"'))+1)]
+                    return [str(i) for i in range(ord(string_set), ord(to)+1)]
         if ret_val:
             list_ = []
             for char in string_set:
