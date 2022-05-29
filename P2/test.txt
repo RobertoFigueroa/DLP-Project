@@ -1,10 +1,9 @@
-COMPILER Cocol
+COMPILER MyCOCOR
 (.//Especificacion de Funciones.)
-
 CHARACTERS
 
-letter = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".
-digit = "0123456789".
+letter= "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".
+digit= "0123456789".
 
 cr = CHR(13).
 lf = CHR(10).
@@ -12,9 +11,8 @@ tab = CHR(9).
 ignore = cr+lf+tab.
 comillas = CHR(34).
 stringletter = ANY-comillas-ignore.
-gato = CHR(12)..CHR(56).
 
-operadores = "+-=()[]{}|.<>".
+operadores ="+-=()[]{}|.<>".
 MyANY = ANY-operadores.
 
 TOKENS
@@ -27,10 +25,10 @@ charnumber = "CHR("digit{digit}")".
 charinterval = "CHR("digit{digit}")""..""CHR("digit{digit}")".
 
 nontoken = MyANY.
-startcode = "(.".
-endcode = ".)".
+startcode ="(.".
+endcode=".)".
 
-IGNORE ignore
+IGNORE ignore.
 
 
-END Cocol
+END MyCOCOR
