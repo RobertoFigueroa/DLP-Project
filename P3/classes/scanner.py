@@ -2,6 +2,7 @@ from classes.buffer import Buffer
 from classes.cocol_tokens import CocolProcessor, CocolProcessorTokens
 from classes.set_gen import SetGeneator
 from classes.dtypes import Token, Keyword, VarType
+import pickle
 
 EOL = '\n'
 EOF = None
@@ -17,6 +18,7 @@ class Cocol:
         self.keyword = []
         self.tokens = []
         self.ignore = []
+        self.productions = []
         self.coco = CocolProcessor()
         self.coco.generate_dfas()
         self.tokens_process = CocolProcessorTokens()
@@ -29,6 +31,7 @@ class Cocol:
         ->Characters: {self.characters}
         ->Keywords: {self.keyword}
         ->Tokens: {self.tokens}
+        ->Productions: {self.productions}
         ->Ignore: {self.ignore}"""
 
 
@@ -42,6 +45,7 @@ class Scanner:
         self.col = 0 #columna que va leyendo
         self.char_pos = 0
         self.next_line()
+        self.productions = []
 
     def next_line(self) -> None:
         # posicion actual    
@@ -83,8 +87,8 @@ class Scanner:
 
                 elif "PRODUCTIONS" in self.current_line:
                     print("Reading productions")
-
                     self.next_line()
+                    self.read_productions()
 
                 elif "IGNORE" in self.current_line:
                     print("Reading ignores")
@@ -113,6 +117,26 @@ class Scanner:
         for i in self.coco_file.characters:
             if i.ident == line:
                 self.coco_file.ignore += list(i.value)
+
+    def read_productions(self):
+        
+        while not any(word in ["END", "IGNORE"] for word in self.current_line):
+
+            self.productions.append(" ".join(self.current_line))
+            self.next_line()
+
+        stream = []
+        for i in '\n'.join(self.productions):
+            for j in i:
+                stream.append(str(ord(j)))
+        print("This is stream", stream)
+        _f = open("proddfa", "rb")
+        dfa = pickle.load(_f)
+        
+        self.coco_file.productions = dfa.get_tokens(stream)
+
+        _f.close()
+
 
     def read_section(self, section):
 

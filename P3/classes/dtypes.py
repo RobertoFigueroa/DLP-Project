@@ -22,9 +22,10 @@ class Keyword(Element):
 
 
 class Token(Element):
-    def __init__(self, ident, value, context=None):
+    def __init__(self, ident, value, context=None, attribute=None):
         super().__init__(ident, value)
         self.context = context
+        self.attr = attribute
 
     def __repr__(self):
         if self.context != None:

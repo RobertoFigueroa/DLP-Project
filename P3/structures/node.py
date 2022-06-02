@@ -10,7 +10,7 @@ from classes.symbol import Symbol
 
 class Node:
 
-    def __init__(self, value, left=None, right=None) -> None:
+    def __init__(self, value, left=None, right=None, attribute=None) -> None:
         self.value = value
         self.left = left
         self.right = right
@@ -23,6 +23,11 @@ class Node:
         self.firstpos_ = None
         self.lastpos_ = None
         self.followpos_ = dict()
+        self.attr = attribute
+        self.instruction = None
+        self.n_terminals = None
+        self.leafs = None
+        self.is_root = False
 
     def add_child(self, child : any) -> None:
         self.children.append(child)
@@ -65,6 +70,124 @@ class Node:
 
         
         return nfa
+
+
+    def build_instructions(self, n_terminals : list):
+        leafs = self.leafs # root leafs
+        data = []
+        def _postorder(node):
+            if node is None:
+                return
+            _postorder(node.left)
+            _postorder(node.right)
+            data.append(node.generate_code(n_terminals, leafs))
+        _postorder(self)
+        return data
+
+    def generate_code(self, n_terminals, leafs):
+        if self.value == 'Ω':
+            self.kleene_instruction(n_terminals, leafs)
+        elif self.value == '|':
+            self.or_instruction(n_terminals, leafs)
+        elif self.value == '؞':
+            self.concat_instruction(n_terminals, leafs)
+        elif self.value == '?':
+            self.question_instruction(n_terminals, leafs)
+            pass
+        else: #is terminal or non terminal node
+            self.gen_instruction(n_terminals, leafs)
+
+    def tab(self, instruction):
+        result = []
+        for i in instruction.split('\n'):
+            result.append('\t'+i)
+        
+        return '\n'.join(result)
+    
+    def question_instruction(self, n_terminals, leafs):
+        condition = []
+        for i in self.left.firstpos_:
+            if i.value in n_terminals:
+                if i.attr:
+                    condition.append(i.value+f"({i.attr})")
+                else:
+                    condition.append(i.value+"()")
+            else:
+                condition.append(i.value)
+        inst = f"""
+if self.current_token.value in {condition} or self.curren_token.ident in {condition}:
+{self.tab(self.left.instruction)}"""
+
+        self.instruction = inst
+
+    def gen_instruction(self, n_terminals, leafs):
+        if self.value in n_terminals and not self.is_root:
+            self.instruction = f"{self.attr + '=' if self.attr  else ''}" + "self." + self.value + f"({self.attr if self.attr else ''})"
+        elif self.value in n_terminals and self.is_root:
+            self.instruction = "def "+self.value+f"(self,{self.attr if self.attr else ''}):"
+            self.instruction = self.instruction + self.tab(self.left.instruction) + self.tab(f"\nreturn {self.attr}")
+            self.instruction = "\n" + self.tab(self.instruction)
+        else:
+            if "(." in self.value:
+                inst = self.value
+                inst = inst.replace("(.", "")
+                inst = inst.replace(".)", "")
+                inst = inst.strip()
+                self.instruction = inst
+            else:
+                self.instruction = f"self.expect({self.value})"
+
+    def concat_instruction(self, n_terminals, leafs):
+        inst = f"""
+{self.left.instruction}
+{self.right.instruction}"""
+        self.instruction = inst
+
+    def or_instruction(self, n_terminals,leafs):
+        condition1 = []
+        if self.left:
+            for i in self.left.firstpos_:
+                if i.value in n_terminals:
+                    if i.attr:
+                        condition1.append(i.value+f"({i.attr})")
+                    else:
+                        condition1.append(i.value+"()")
+                else:
+                    condition1.append(i.value)
+        condition2 = []
+        if self.right:
+            for i in self.right.firstpos_:
+                if i.value in n_terminals:
+                    if i.attr:
+                        condition2.append(i.value+f"({i.attr})")
+                    else:
+                        condition2.append(i.value+"()")
+                else:
+                    condition2.append(i.value)
+        inst = f"""
+if self.current_token.value in {condition1} or self.curren_token.ident in {condition1}:
+{self.tab(self.left.instruction)}
+elif self.current_token.value in {condition2} or self.curren_token.ident in {condition2}:
+{self.tab(self.right.instruction)}
+else:
+{self.tab("print('Error sintáctico')")}
+{self.tab("return 0")}"""
+        self.instruction = inst  
+
+    def kleene_instruction(self,n_terminals, leafs):
+        condition = []
+        for i in self.firstpos_:
+            if i.value in n_terminals:
+                if i.attr:
+                    condition.append(i.value+f"({i.attr})")
+                else:
+                    condition.append(i.value+"()")
+            else:
+                condition.append(i.value)
+        inst = f"""
+while self.current_token.value in {condition} or self.current_token.ident in {condition}:
+{self.tab(self.left.instruction)}"""
+        self.instruction = inst
 
 
 
@@ -170,6 +293,22 @@ class Node:
         _postorder(self)
         return data
 
+    def null_(self) -> bool:
+        if self.value == self.epsilon:
+            self.null = True
+        elif self.value == '|':
+            self.null = self.left.null or self.right.null
+        elif self.value == '؞':
+            self.null = self.left.null and self.right.null
+        elif self.value == 'Ω':
+            self.null = True
+        elif self.value == '?':
+            self.null = True # Existe la posiblidad de generar la cadena vacia
+        elif self.value == '+':
+            self.null = False # No existe posiblidad de generar la cadena vacia
+        else:
+            self.null = False
+
     def nullable(self) -> bool:
         if self.value == self.epsilon:
             self.null = True
@@ -206,6 +345,26 @@ class Node:
         return leafs, nodes
 
 
+
+
+    def build_null_first(self, n_terminals : list):
+        leafs = []
+        nodes = []
+        def _postorder(node):
+            if node is None:
+                return
+            if not node.left and not node.right:
+                node.leaf_value = len(leafs)
+                leafs.append(node)
+            _postorder(node.left)
+            _postorder(node.right)
+            node.null_()
+            node.first(n_terminals)
+            #node.lastpos()
+            nodes.append(node)
+        _postorder(self)
+        return leafs, nodes
+
     def firstpos(self) -> set:
         if self.value == self.epsilon:
             self.firstpos_ = set([])
@@ -224,6 +383,29 @@ class Node:
             self.firstpos_ = self.left.firstpos_
         else:
             self.firstpos_ = set([self.leaf_value])
+
+    def first(self, n_terminals : list) -> set:
+            if self.value == self.epsilon:
+                self.firstpos_ = set([])
+            elif self.value == '|':
+                self.firstpos_ = self.left.firstpos_.union(self.right.firstpos_)
+            elif self.value == '؞':
+                if self.left.null:
+                    self.firstpos_ = self.left.firstpos_.union(self.right.firstpos_)
+                else:
+                    self.firstpos_ = self.left.firstpos_
+            elif self.value == 'Ω':
+                self.firstpos_ = self.left.firstpos_
+            elif self.value == '?':
+                self.firstpos_ = self.left.firstpos_
+            elif self.value == '+':
+                self.firstpos_ = self.left.firstpos_
+            else:
+                for i in n_terminals:
+                    if i.value == self.value:
+                        self.firstpos_ = i.firstpos_
+                        return
+                self.firstpos_ = set([self])
 
     def lastpos(self):
         if self.value == self.epsilon:
@@ -335,9 +517,16 @@ class Node:
         init_state = dStates[0][0]
 
         return DFA(states, new_alphabet, init_state, trans_func, final_states)
-
-
-                    
+        
 
     def __repr__(self) -> str:
         return f"{str(self.value)}"
+
+
+    def in_order(self, node): #left root right
+        if node == None:
+            return
+
+        self.in_order(node.left)
+        self.in_order(node.right)
+        print(node.value)

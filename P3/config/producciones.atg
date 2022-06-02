@@ -1,0 +1,46 @@
+COMPILER Producciones
+
+CHARACTERS
+
+letter = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".
+digit = "0123456789".
+tab = CHR(9).
+cr = CHR(13).
+lf = CHR(10).
+w = CHR(32).
+toignore = cr + lf + tab.
+quotes = CHR(34).
+lkbracket = '{'.
+rkbracket = '}'.
+lsqbracket = '['.
+rsqbracket = ']'.
+lpars = '('.
+rpars = ')'.
+lstring = ANY - quotes -toignore.
+orchr = CHR(124).
+opensem = "(.".
+closesem = ".)".
+openattr = "<".
+closeattr = ">".
+
+KEYWORDS
+
+end = ".".
+
+TOKENS
+
+ident = letter{letter|digit}.
+string = quotes lstring{lstring} quotes.
+attributes =  "<" lstring{lstring} ">".
+semantics = "(." lstring{lstring} ".)".
+
+lkleene = lkbracket.
+rkleene = rkbracket.
+lbracket = lsqbracket.
+rbracket = rsqbracket.
+lpar = lpars.
+rpar = rpars.
+or = orchr.
+
+
+END Producciones

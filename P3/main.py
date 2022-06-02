@@ -6,130 +6,77 @@ from classes.parser import Parser
 from classes.expression import Expression
 from classes.cocol_tokens import CocolParser
 from classes.gen_code import GenCode
+from classes.prodNode import ProdNode
 
 import pickle
 import sys
 
-import string 
+import string
 
 def main(file_name : str) -> int:
-    
-    sc = Scanner(file_name)
 
+    # Lectura del archivo COCOL
+    sc = Scanner(file_name)
+    # Análisis de la lectura de cocol
     file_analyzed = sc.analyze_file()
 
-    # print(file_analyzed)
-
+    # Parseo de los Tokens encontrados en
+    # el archivo COCOL
     p = Parser(
         file_analyzed.characters,
         file_analyzed.keyword,
         file_analyzed.tokens,
-        file_analyzed.ignore
-
+        file_analyzed.ignore,
+        file_analyzed.productions
     )
 
+    # Parseo de los tokens encontrados en
+    # la sección de PRODUCCIONES
+    p.parseProductions()
+    pnodes = []
+    n_terminals = []
+
+    # Generacion de árboles por producciones
+    for p in p.productions[::-1]:
+        pr = ProdNode(p)
+        root = pr.anlyze_build_tree()
+        n_terminals.append(root.value)
+        l, _ = root.build_null_first(pnodes)
+        root.leafs = l
+        root.is_root = True
+        root.firstpos_ = root.left.firstpos_
+        pnodes.append(root)
     
+    # Listar instrucciones de las producciones
+    instructions = ""
+    for r in pnodes[::-1]:
+        r.build_instructions(n_terminals)
+        instructions = instructions + r.instruction 
+
+    # Parseo de los tokens encontrados en 
+    # las secciones diferentes a PRODUCCIONES
     p.parse()
-    p.sort()
-
-    # print("*"*20)
-    # print("Result is: ", p.get_result())
-    # print("*"*20)
-
-
     cocol_parser = CocolParser(p.get_result(), p.ignore, p.raw_keywords)
     cocol_parser.generate_dfas()
     dfa = cocol_parser.dfa
-    # dfa.get_image()
 
-    # file_name = "test.txt"
-    # f = open(file_name)
-    # _file = f.readlines()
-    # stream = []
-    # for i in _file:
-    #     for j in i:
-    #         stream.append(str(ord(j)))
-
-    # tokens = dfa.get_tokens(stream)
-    # print("Tokens encontrados \n", tokens)
-
-
+    # Serializción del DFA para
+    # reconcer tokens
     _file = open("dfa", "wb")
     pickle.dump(dfa, _file)
     _file.close()
 
-
+    # Generar código para leer archivo de entrada
     code = GenCode()
     code.generate_file()
 
-    print("File ready")
-
-        # --- Build direct DFA ---
-    # exp = Expression(p.get_result(), is_extended=True)
-    # root = exp.anlyze_build_tree()
-    # leafs, nodes = root.build_firstlast_pos()
-    # followpos = root.followpos(leafs, nodes)
-    # directed_dfa = root.build_direct_DFA(exp.alphabet.get_alphabet(), followpos, leafs)
-    # # directed_dfa.get_image()
-    # print('*'*20)
-    # print("DFA (direct)")
-    # print('*'*20)
-    # print(directed_dfa)
+    # Fin
+    print("File ready!!!")
 
 
-
-
-    # buf = [str(ord("1"))]
-    # t = directed_dfa.get_tokens(buf)
-    # print(t)
-
-    # ascii_printable = string.printable
-    # any_but_quote = "|".join([s for s in ascii_printable.replace('"', "")])
-    # any_but_apostrophe = "|".join([s for s in ascii_printable.replace("'", "")])
-    # open_quote_mark = "«"
-    # open_par = "܆"
-    # close_par = "܇"
-    # plus = "܀"
-    # CHR = "¶"
-    # letter = "|".join([ch for ch in string.ascii_letters])
-    # any_but_quote = letter
-    # any_but_apostrophe = letter
-    # digit = "0|1|2|3|4|5|6|7|8|9"
-    # String = f'"({any_but_quote})*"'
-    # char = f"\\'({any_but_apostrophe})\\'"
-    # char = char.replace("\\'", open_quote_mark)
-    # number = f'(({digit})({digit})*)'
-    # ident = f'({letter})({letter}|{digit})*'
-
-    # Char = f'(({char})|(CHR{open_par}{number}{close_par}))'
-    # BasicSet = f'({String})|({ident})|({Char}(..{Char})?)'
-    # Set = f'({BasicSet})(({plus}|-)({BasicSet}))*'
-    # SetDecl = f'({ident})=({Set})'
-
-    # print(SetDecl)
-    # print(SetDecl)
-
-            # --- Build direct DFA ---
-    # exp = Expression(SetDecl, is_extended=True)
-    # root = exp.anlyze_build_tree()
-    # leafs, nodes = root.build_firstlast_pos()
-    # followpos = root.followpos(leafs, nodes)
-    # directed_dfa = root.build_direct_DFA(exp.alphabet.get_alphabet(), followpos, leafs)
-    # #directed_dfa.get_image()
-    # print('*'*20)
-    # print("DFA (direct)")
-    # print('*'*20)
-    # print(directed_dfa)
-    # while True:
-    #     word = input("Type word: ")
-    #     result = directed_dfa.analyze(word)
-    #     print(result)
 
 if __name__ == '__main__':
 
-    #file_name = input("Ingrese el nombre del archivo >> ")
-    # file_name = "test.cocol"
-    #TODO: VALIDATE INPUT
     if len(sys.argv) <= 1:
         print("No file detected")
     else:

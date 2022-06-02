@@ -5,6 +5,8 @@ import codecs
 
 from classes.set import ANY_SET, CONTEXT_WORDS
 
+
+
 def GetTextInsideSymbols(string, start_symbol, end_symbol):
     start = string.find(start_symbol)
     end = string.find(end_symbol)

@@ -1,10 +1,11 @@
+from numpy import product
 from classes.dtypes import VarType
 from classes.dtypes import Token
 from classes.expression import Expression
 
 class Parser:
 
-    def __init__(self, characters, keywords, tokens, ignore) -> None:
+    def __init__(self, characters, keywords, tokens, ignore, productions) -> None:
         self.raw_characters = characters
         self.characters = []
         self.raw_keywords = keywords
@@ -20,6 +21,65 @@ class Parser:
         self.temp_res = []
         self.ignore = ignore
         self.keywords_except = []
+        self.raw_productions = productions
+        self.productions = []
+
+
+
+    def parseProductions(self):
+        temp = []
+        for element in self.raw_productions:
+            if element.ident == "lkleene":
+                temp.append(Token("lparen", "◀"))
+
+            elif element.ident == "rkleene":
+                temp.append(Token("rparen", "▶"))
+                temp.append(Token("kleene", "Ω"))
+
+            elif element.ident == "string":
+                # s = element.value
+                # s = s.strip('"')
+                temp.append(Token("string", element.value))
+
+            elif element.ident == "lbracket":
+                temp.append(Token("lparen", "◀"))
+
+            elif element.ident == "rbracket":
+                temp.append(Token("rparen", "▶"))
+                temp.append(Token("option", "?"))
+
+            elif element.ident == "lpar":
+                temp.append(Token("lparen", "◀"))
+
+            elif element.ident == "rpar":
+                temp.append(Token("rparen", "▶"))
+            
+            elif element.ident == "attributes":
+                inst = element.value
+                inst = inst.replace("<", "")
+                inst = inst.replace(">", "")
+                inst = inst.strip()
+                temp[-1].attr = inst #means is iddentifier
+                #temp.append(Token("attributes", inst))
+
+            elif element.ident == "semantics":
+                inst = element.value
+                # inst = inst.replace("(.", "")
+                # inst = inst.replace(".)", "")
+                inst = inst.strip()
+                temp.append(Token("semantics", inst))                
+            
+            elif element.ident == "ident":
+                temp.append(element)
+            
+            elif element.ident == 'or':
+                temp.append(element)
+
+            elif element.ident == "end":
+                self.productions.append(temp)
+                temp = []
+            
+
 
 
     def format_(self, iterable):
@@ -72,9 +132,6 @@ class Parser:
             else:
                 first_tokens.append(i)
         self.result = first_tokens + last_tokens
-
-
-
 
     def parse(self):
 
@@ -163,4 +220,3 @@ class Parser:
             if i in ["(", ")", "*", "|", ")?"]:
                 return True
         return False
-
