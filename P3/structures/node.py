@@ -113,7 +113,14 @@ class Node:
                 else:
                     condition.append(i.value+"()")
             else:
-                condition.append(i.value)
+                if i.value.count('"') > 1 or i.value.count("'") > 1: #means is string
+                    v = i.value
+                    if len(i.value) >= 3:
+                        v = i.value[1:-1]
+                    v.strip('"')
+                    condition.append(v)
+                else:
+                    condition.append(i.value)
         inst = f"""
 if self.current_token.value in {condition} or self.curren_token.ident in {condition}:
 {self.tab(self.left.instruction)}"""
@@ -124,7 +131,7 @@ if self.current_token.value in {condition} or self.curren_token.ident in {condit
         if self.value in n_terminals and not self.is_root:
             self.instruction = f"{self.attr + '=' if self.attr  else ''}" + "self." + self.value + f"({self.attr if self.attr else ''})"
         elif self.value in n_terminals and self.is_root:
-            self.instruction = "def "+self.value+f"(self,{self.attr if self.attr else ''}):"
+            self.instruction = "def "+self.value+f"(self{' ,' + self.attr if self.attr else ''}):"
             self.instruction = self.instruction + self.tab(self.left.instruction) + self.tab(f"\nreturn {self.attr}")
             self.instruction = "\n" + self.tab(self.instruction)
         else:
@@ -135,7 +142,12 @@ if self.current_token.value in {condition} or self.curren_token.ident in {condit
                 inst = inst.strip()
                 self.instruction = inst
             else:
-                self.instruction = f"self.expect({self.value})"
+                if self.value.count('"') > 1 or self.value.count("'") > 1: #means is string
+                    self.instruction = f"self.expect({self.value})"
+                else:
+                    self.instruction = f"self.expect('{self.value}')"
+    
+
 
     def concat_instruction(self, n_terminals, leafs):
         inst = f"""
@@ -153,7 +165,14 @@ if self.current_token.value in {condition} or self.curren_token.ident in {condit
                     else:
                         condition1.append(i.value+"()")
                 else:
-                    condition1.append(i.value)
+                    if i.value.count('"') > 1 or i.value.count("'") > 1: #means is string
+                        v = i.value
+                        if len(i.value) >= 3:
+                            v = i.value[1:-1]
+                        v.strip('"')
+                        condition1.append(v)
+                    else:
+                        condition1.append(i.value)
         condition2 = []
         if self.right:
             for i in self.right.firstpos_:
@@ -163,7 +182,14 @@ if self.current_token.value in {condition} or self.curren_token.ident in {condit
                     else:
                         condition2.append(i.value+"()")
                 else:
-                    condition2.append(i.value)
+                    if i.value.count('"') > 1 or i.value.count("'") > 1: #means is string
+                        v = i.value
+                        if len(i.value) >= 3:
+                            v = i.value[1:-1]
+                        v.strip('"')
+                        condition2.append(v)
+                    else:
+                        condition2.append(i.value)
         inst = f"""
 if self.current_token.value in {condition1} or self.curren_token.ident in {condition1}:
 {self.tab(self.left.instruction)}
@@ -183,7 +209,15 @@ else:
                 else:
                     condition.append(i.value+"()")
             else:
-                condition.append(i.value)
+                if i.value.count('"') > 1 or i.value.count("'") > 1: #means is string
+                    v = i.value
+                    if len(i.value) >= 3:
+                        v = i.value[1:-1]
+                    v.strip('"')
+                    condition.append(v)
+                else:
+                    condition.append(i.value)
+    
         inst = f"""
 while self.current_token.value in {condition} or self.current_token.ident in {condition}:
 {self.tab(self.left.instruction)}"""
@@ -307,7 +341,10 @@ while self.current_token.value in {condition} or self.current_token.ident in {co
         elif self.value == '+':
             self.null = False # No existe posiblidad de generar la cadena vacia
         else:
-            self.null = False
+            if "(." in self.value:
+                self.null = True
+            else:
+                self.null = False
 
     def nullable(self) -> bool:
         if self.value == self.epsilon:
@@ -405,7 +442,10 @@ while self.current_token.value in {condition} or self.current_token.ident in {co
                     if i.value == self.value:
                         self.firstpos_ = i.firstpos_
                         return
-                self.firstpos_ = set([self])
+                if "(." in self.value:
+                    self.firstpos_ = set([])
+                else:
+                    self.firstpos_ = set([self])
 
     def lastpos(self):
         if self.value == self.epsilon:

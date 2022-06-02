@@ -1,3 +1,6 @@
+from copyreg import pickle
+
+
 class GenCode:
 
     def __init__(self, file_name="custom_scanner.py") -> None:
@@ -36,6 +39,7 @@ for i in _file:
         """
 _f = open("dfa", "rb")
 dfa = pickle.load(_f)
+_f.close()
         """
         )
 
@@ -54,6 +58,14 @@ for i in tokens:
         """
         )
 
+    def serialize_tokens(self):
+        self.file.write(
+"""     
+_file = open("tokens", "wb")
+pickle.dump(tokens, _file)
+_file.close()
+"""
+        )
     
     def close_file(self):
         self.file.close()
@@ -65,13 +77,16 @@ for i in tokens:
         self.create_automata()
         self.evaluate()
         self.result()
+        self.serialize_tokens()
         self.close_file()
 
 
 class ParserCodeGenerator:
 
-    def __init__(self, file_name) -> None:
+    #file_name : El archivo donde se esciribra el parser
+    def __init__(self, file_name="custom_parser.py", instructions="") -> None:
         self.file = open(file_name, "w")
+        self.instructions = instructions
 
     def write_imports(self):
         self.file.write(
@@ -81,88 +96,75 @@ import sys
             """
         )
 
-    def write_read_tokens(self):
+    def write_template(self):
         self.file.write(
-        """
-file_name = sys.argv[1]
-_file = None
-try:
-    f = open(file_name, "r")
-    _file = f.readlines()
-    f.close()
-except:
-    raise("No se pudo leer el archivo, revise al archivo y/o el path: ", file_name)
 
-stream = []
-for i in _file:
-    for j in i:
-        stream.append(str(ord(j)))
+"""
+class MyParser:
 
-        """
+\tdef __init__(self) -> None:
+\t\tself.prev_token = None
+\t\tself.current_token = None
+\t\tself.prev_char = None
+\t\tself.current_char = None
+\t\tself.pos = 0
+\t\tself.read_tokens()
+\t\tself.next_token()
+
+\tdef read_tokens(self):
+\t\t_f = open("tokens", "rb")
+\t\ttokens = pickle.load(_f)
+\t\tself.token_stream = iter(tokens)
+
+\tdef next_token(self):
+\t\ttry:
+\t\t\tself.prev_token = self.current_token
+\t\t\tself.current_token = next(self.token_stream)
+\t\t\tself.pos += 1
+\t\texcept StopIteration:
+\t\t\tself.current_val = None
+
+    
+\tdef next_char(self):
+
+\t\ttry:
+\t\t\tself.prev_char = self.current_char
+\t\t\tself.current_char = next(self.file_stream)
+
+\t\texcept StopIteration:
+\t\t\tself.current_char = None
+
+\tdef expect(self, char):
+\t\tif char:
+\t\t\tif self.current_token.ident == char or self.current_token.value == char:
+\t\t\t\tself.next_token()
+\t\t\t\treturn True
+\t\tprint(f"Error cerca del caracter {self.pos} esperaba {char} encontre {self.current_token.value} ;(")
+\t\tself.next_token()
+\t\treturn False
+"""
         )
+
+    def write_productions(self):
+        self.file.write(self.instructions)
+
+    def write_exec_code(self, first_prod):
+        self.file.write(
+f"""
+parser = MyParser()
+parser.{first_prod}
+print("Success Parsing!")
+""")
+
+
 
     def close_file(self):
         self.file.close()
     
-    def read_file(self):
-        pass
-
-s = """
-class MyParser:
-
-    def __init__(self, tokenStream : list, inputFile) -> None:
-
-        self.token_stream = iter(tokenStream)
-        self.file = inputFile
-        self.read_file()
-        self.prev_token = None
-        self.current_token = None
-        self.prev_char = None
-        self.current_char = None
-        self.pos = 0
+    def generate_file(self,first_prod):
+        self.write_imports()
+        self.write_template()
+        self.write_productions()
+        self.write_exec_code(first_prod)
+        self.close_file()
     
-
-    def read_tokens(self):
-        # TODO: Consider if pickle tokens
-        pass
-        
-    def read_file(self):
-        try:
-            f = open(self.file, "r")
-            self.file_stream = f.read()
-            self.file_stream = iter(self.file_stream)
-            f.close()
-        except:
-            raise("No se pudo leer el archivo, revise al archivo y/o el path: ", file_name)
-
-
-    def next_token(self):
-
-        try:
-            self.prev_token = self.current_token
-            self.current_token = next(self.token_stream)
-            self.pos += 1
-        except StopIteration:
-            self.current_val = None
-
-    
-    def next_char(self):
-
-        try:
-            self.prev_char = self.current_char
-            self.current_char = next(self.file_stream)
-        
-        except StopIteration:
-            self.current_char = None
-
-    def expect(self, char):
-        if char:
-            if self.current_token.ident == char or self.current_token.value == char:
-                self.next_token()
-                return True
-        print(f"Error cerca del caracter {self.pos} esperaba {char} encontre {self.current_token.value} ;(")
-        self.next_token()
-        return False
-
-    
-"""

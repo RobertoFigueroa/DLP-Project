@@ -23,6 +23,7 @@ class Cocol:
         self.coco.generate_dfas()
         self.tokens_process = CocolProcessorTokens()
         self.tokens_process.generate_dfas()
+        self.special_tokens = []
 
     def __str__(self) -> str:
         return f"""
@@ -104,7 +105,7 @@ class Scanner:
 
             else:
                 self.next_line()
-        print(self.coco_file)
+        #print(self.coco_file)
         return self.coco_file
 
     def read_ignore(self):
@@ -129,15 +130,20 @@ class Scanner:
         for i in '\n'.join(self.productions):
             for j in i:
                 stream.append(str(ord(j)))
-        print("This is stream", stream)
+        # print("This is stream", stream)
         _f = open("proddfa", "rb")
         dfa = pickle.load(_f)
         
         self.coco_file.productions = dfa.get_tokens(stream)
-
         _f.close()
+        prod_tokens = []
+        for i in self.coco_file.productions:
+            if i.ident == "string":
+                v = i.value.strip('"')
+                prod_tokens.append(v)
 
-
+        self.coco_file.special_tokens = prod_tokens
+        
     def read_section(self, section):
 
         joined_set = ''
@@ -232,6 +238,6 @@ class Scanner:
             Token(key, _set.final_set)
         )
 
-        print("cocol characters:", self.coco_file)
+        # print("cocol characters:", self.coco_file)
 
 

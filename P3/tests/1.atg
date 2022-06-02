@@ -12,6 +12,7 @@ TOKENS
 ident = letter{letter|digit} EXCEPT KEYWORDS.
 number = digit{digit}.
 
+
 PRODUCTIONS
 
 Expr= {Stat ";"}".".
@@ -44,7 +45,8 @@ Factor<result> =	(.signo=1.)
 	.
 	
 Number<result> = 
-number		(.result = int(self.current_value.value).)
+number		
+(.result = int(self.current_value.value).)
 .
 
 END Aritmetica

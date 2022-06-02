@@ -19,7 +19,7 @@ def main(file_name : str) -> int:
     file_analyzed = sc.analyze_file()
     
 
-    # print(file_analyzed)
+    print(file_analyzed)
 
 
     p = Parser(
@@ -56,7 +56,7 @@ def main(file_name : str) -> int:
     # print("Tokens encontrados \n", tokens)
 
 
-    _file = open("dfa", "wb")
+    _file = open("proddfa", "wb")
     pickle.dump(dfa, _file)
     _file.close()
 

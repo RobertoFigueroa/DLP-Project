@@ -41,7 +41,7 @@ class ProdNode:
             if self.string[i].value == " ":
                 if i+1 < word_size:
                     if str(self.string[i+1].value) in str(self.alphabet) and not symbols.is_empty():
-                        operands.push(Node('؞'))
+                        operands.push(Node('؞', attribute=self.string[i+1].attr))
                 i += 1
                 continue
 
@@ -49,7 +49,7 @@ class ProdNode:
                 symbols.push(Node(self.string[i].value, attribute=self.string[i].attr))
                 if i+1 < word_size:
                     if str(self.string[i+1].value) in str(self.alphabet) or self.string[i+1].value == '◀':
-                        operands.push(Node('؞'))
+                        operands.push(Node('؞', attribute=self.string[i+1].attr))
             
             elif self.string[i].value == '◀':
                 operands.push(Node(self.string[i].value))
@@ -68,7 +68,7 @@ class ProdNode:
                     operands.pop()
                 if i+1 < word_size:
                     if str(self.string[i+1].value) in str(self.alphabet) or self.string[i+1].value == '◀':
-                        operands.push(Node('؞'))
+                        operands.push(Node('؞', attribute=self.string[i+1].attr))
 
             elif (self.string[i].value == 'Ω' or self.string[i].value == '?'):
                 val1 = symbols.pop()
@@ -77,7 +77,7 @@ class ProdNode:
                 symbols.push(op)
                 if i+1 < word_size:
                     if str(self.string[i+1].value) in str(self.alphabet) or self.string[i+1].value == '◀':
-                        operands.push(Node('؞'))
+                        operands.push(Node('؞', attribute=self.string[i+1].attr))
             else:
                 while not operands.is_empty() and (self.precedence(operands.top().value) > self.precedence(self.string[i].value)):
                     val2 = symbols.pop()

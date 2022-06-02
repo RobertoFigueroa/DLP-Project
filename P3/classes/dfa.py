@@ -16,6 +16,7 @@ class DFA(FA):
         self.ignore = None
         self.keywords = []
         self.keywords_except = []
+        self.special_tokens = []
 
     def move(self, state, symbol):
         if state:
@@ -115,6 +116,7 @@ class DFA(FA):
         word_len = len(word)
         idx = 0
         buff = ''
+        error_buff = '' # chequeo en cada error de scanner si esta en los tokens especiales, borro, append y sigo
         if word_len == 0:
             return tokens
         last_token = None
@@ -137,7 +139,14 @@ class DFA(FA):
                         last_token = None
                         idx -=1
                     else:
-                        print(f"Error léxico encontro--> {chr(int(word[idx]))}")
+                        error_buff += chr(int(word[idx]))
+                        for i in self.special_tokens:
+                            if error_buff == i:
+                                print(f"Revisando en error buff con {i} y {error_buff}")
+                                tokens.append(Token("PROD_TOKEN", error_buff))
+                                error_buff = ''
+
+                        print(f"Error léxico encontro--> {chr(int(word[idx]))}, {buff}")
                         current_state = self.init_state
                         buff = ''
                         last_token = None
