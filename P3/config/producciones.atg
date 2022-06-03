@@ -17,6 +17,7 @@ rsqbracket = ']'.
 lpars = '('.
 rpars = ')'.
 lstring = ANY - quotes -toignore.
+semstring = ANY - toignore.
 orchr = CHR(124).
 opensem = "(.".
 closesem = ".)".
@@ -32,7 +33,7 @@ TOKENS
 ident = letter{letter|digit}.
 string = quotes lstring{lstring} quotes.
 attributes =  "<" lstring{lstring} ">".
-semantics = "(." lstring{lstring} ".)".
+semantics = "(." semstring{semstring} ".)".
 
 lkleene = lkbracket.
 rkleene = rkbracket.

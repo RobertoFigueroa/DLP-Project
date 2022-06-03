@@ -45,8 +45,7 @@ Factor<result> =	(.signo=1.)
 	.
 	
 Number<result> = 
-number		
-(.result = int(self.current_value.value).)
+number		(.result = int(self.prev_token.value).)
 .
 
 END Aritmetica

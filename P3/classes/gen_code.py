@@ -114,7 +114,11 @@ class MyParser:
 \tdef read_tokens(self):
 \t\t_f = open("tokens", "rb")
 \t\ttokens = pickle.load(_f)
-\t\tself.token_stream = iter(tokens)
+\t\tf_tokens  = []
+\t\tfor i in tokens:
+\t\t\t\tif i.ident != 'nontoken':
+\t\t\t\t\t\tf_tokens.append(i)
+\t\tself.token_stream = iter(f_tokens)
 
 \tdef next_token(self):
 \t\ttry:

@@ -120,12 +120,15 @@ class Scanner:
                 self.coco_file.ignore += list(i.value)
 
     def read_productions(self):
-        
-        while not any(word in ["END", "IGNORE"] for word in self.current_line):
-
+        print(self.coco_file.name)
+        endname = ["END", self.coco_file.name]
+        print(endname)
+        while not any(word in [endname] for word in self.current_line):
+            print(self.current_line)
             self.productions.append(" ".join(self.current_line))
             self.next_line()
-
+            if self.current_line == endname:
+                break
         stream = []
         for i in '\n'.join(self.productions):
             for j in i:

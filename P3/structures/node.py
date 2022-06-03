@@ -122,7 +122,7 @@ class Node:
                 else:
                     condition.append(i.value)
         inst = f"""
-if self.current_token.value in {condition} or self.curren_token.ident in {condition}:
+if self.current_token.value in {condition} or self.current_token.ident in {condition}:
 {self.tab(self.left.instruction)}"""
 
         self.instruction = inst
@@ -191,9 +191,9 @@ if self.current_token.value in {condition} or self.curren_token.ident in {condit
                     else:
                         condition2.append(i.value)
         inst = f"""
-if self.current_token.value in {condition1} or self.curren_token.ident in {condition1}:
+if self.current_token.value in {condition1} or self.current_token.ident in {condition1}:
 {self.tab(self.left.instruction)}
-elif self.current_token.value in {condition2} or self.curren_token.ident in {condition2}:
+elif self.current_token.value in {condition2} or self.current_token.ident in {condition2}:
 {self.tab(self.right.instruction)}
 else:
 {self.tab("print('Error sintáctico')")}
